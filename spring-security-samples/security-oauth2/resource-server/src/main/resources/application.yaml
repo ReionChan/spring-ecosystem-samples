@@ -1,0 +1,37 @@
+server:
+  # 服务器端口
+  port: 9091
+  # 服务器错误页面
+  error:
+    # 失效自动装配的错误白板页面
+    whitelabel:
+      enabled: false
+    # 自定错误页面 MVC 路径地址
+    path: /errorPage
+
+spring:
+  # Security 默认用户设置
+  security:
+    # 已采用数据库的同名 user 用户，覆盖此处配置
+    # 此处配置单纯为了控制台不再打印密码
+    user:
+      name: user
+      password: pwd
+
+    oauth2:
+      # OAuth2 资源服务设置
+      resourceserver:
+        jwt:
+          # 授权服务器签发地址，由此获取授权服务器的令牌解析配置
+          #   优点：授权服务器公钥发生变更能及时获取
+          #   缺点：启动时必须要网络访问授权服务器
+          issuer-uri: http://auth-server:9090
+
+          # 不使用签发地址进行解析时，指定本地保存的签发服务器公钥地址
+          #   优点：离线将授权服务器的公钥拷贝到本地，无需依赖网络访问
+          #   缺点：授权服务器公钥变更没法自动获取
+          #public-key-location: classpath:META-INF/JourneyToTheWestUniverse/public.pem
+
+          # 设置本资源的目标受众，对 OAuth2 而言就是授权中心的客户端，对应签发的 JWT 令牌里的 aud 名的 claim
+          # 就本设置：该资源服务器的资源只提供给 JourneyToTheWestStory 和 Google 两个三方客户端使用，其他都会被 401 拒绝
+          audiences: JourneyToTheWestStory,Google

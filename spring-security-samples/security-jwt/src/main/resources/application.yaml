@@ -1,0 +1,80 @@
+server:
+  error:
+    # 失效自动装配的错误白板页面
+    whitelabel:
+      enabled: false
+    # 自定错误页面 MVC 路径地址
+    path: /errorPage
+
+  servlet:
+    session:
+      # 设置不进行任何形式的 session 跟踪，常用跟踪模式：URL 后缀、COOKIE、SSL
+      # 结合 Security 的 SessionCreationPolicy.STATELESS，将彻底失效 JSESSIONID
+      tracking-modes:
+
+spring:
+  # 数据源配置
+  datasource:
+    # 使用 hikari 连接池的数据源配置
+    hikari:
+      jdbc-url: jdbc:h2:mem:test
+      username: sa
+      password: sa
+      driver-class-name: org.h2.Driver
+
+  # 设置使用内嵌数据库时，执行表结构创建及数据插入
+  sql:
+    init:
+      # 指定使用嵌入式数据库时，才执行 DDL DML
+      mode: EMBEDDED
+      # 指定 DDL 路径
+      schemaLocations: classpath:/META-INF/sql/schema.sql
+      # 指定 DML 路径
+      dataLocations: classpath:/META-INF/sql/data.sql
+
+  # 打开 H2 数据库网页版管理页面，登录地址 localhost:8080/h2
+  # 注意：需要将此配置的路径从 Security 权限验证中排除
+  h2:
+    console:
+      enabled: true
+      path: /h2
+      settings:
+        # 是否允许其他主机访问
+        webAllowOthers: false
+        web-admin-password: admin
+
+  # JPA 设置
+  jpa:
+    # 设置数据平台方言
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+
+  # Security 默认用户设置
+  security:
+    # 已采用数据库的同名 user 用户，覆盖此处配置
+    # 此处配置单纯为了控制台不再打印密码
+    user:
+      name: user
+      password: pwd
+
+
+reion:
+  # JWT 工具类属性配置
+  jwt:
+    # 签发人
+    issuer: reion
+    # 主题
+    subject: auth
+    # 密钥
+    secret: jwtsecretkey
+    # 令牌有效期（分钟数）
+    valid-minutes: 60
+
+logging:
+  level:
+    org:
+      springframework:
+        security:
+          web: info

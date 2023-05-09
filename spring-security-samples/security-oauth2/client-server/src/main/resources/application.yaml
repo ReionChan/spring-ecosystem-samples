@@ -1,0 +1,80 @@
+server:
+  # 服务器端口
+  port: 8080
+  # 服务器错误页面
+  error:
+    # 失效自动装配的错误白板页面
+    whitelabel:
+      enabled: false
+    # 自定错误页面 MVC 路径地址
+    path: /errorPage
+
+spring:
+  # Security 默认用户设置
+  security:
+    # 已采用数据库的同名 user 用户，覆盖此处配置
+    # 此处配置单纯为了控制台不再打印密码
+    user:
+      name: user
+      password: pwd
+
+    # OAuth2 相关配置
+    oauth2:
+      # 客户端相关配置
+      client:
+        # 登记信息
+        registration:
+          # Client 授权服务的登记信息（可以配置多个授权服务的登记信息）
+          JourneyToTheWestUniverse:
+            # 授权服务提供者，对应下方 provider 中的名称
+            provider: JourneyToTheWestUniverse
+            # 在授权服务器注册时生成的客户端 ID
+            client-id: JourneyToTheWestStory
+            # 在授权服务器注册时设置的客户端密码
+            client-secret: secret
+            # 设置 OAuth2 登录页面，授权服务提供者名称
+            client-name: JourneyToTheWestUniverse-西游记神话世界
+            # 当不设置 issuer-uri，就必须手动设置下面四个参数：
+            # ----------------------------------------------------------------
+            # 授权支持的类型
+            authorization-grant-type: authorization_code
+            # 客户端认证方式：此处设置表单方式
+            client-authentication-method: client_secret_post
+            # 授权完成后的跳转回调 URI
+            redirect-uri: http://cli-server:8080/login/oauth2/code/auth-server
+            # 权限范围枚举值
+            scope:
+              # 开启 OIDC 协议必须指定的权限范围
+              - openid
+              # OIDC 中涉及 /userinfo 端点的三个权限范围
+              - profile
+              - email
+              - phone
+              # 自定义权限范围
+              - MAGIC_SKILL
+              - WEAPON
+
+        # 预设的授权服务提供方，默认已经有 Google、Github、Facebook、Okta
+        # 详情参见类：CommonOAuth2Provider
+        provider:
+          # 自定义授权服务提供方，此设置授权服务提供方名称，与上面的 provider 要对应一致
+          JourneyToTheWestUniverse:
+            # 设置 issuer-uri，让客户端启动时像此授权中心动态获取 OAuth2 和 OIDC 周知端点 URL：
+            # ------------------------------------------------------------------------
+            #   authorizationUri、token-uri、jwk-set-uri、user-info-uri
+            #   优点：授权服务器对端点做出修改，客户端只需重新加载即可
+            #   缺点：启动时，必须要能够访问授权中心的周知端点
+            #
+            # OAuth2 的周知端点：issuer-uri/.well-known/oauth-authorization-server
+            # OIDC 的周知端点：issuer-uri/.well-known/openid-configuration
+            # ------------------------------------------------------------------------
+            #issuer-uri: http://auth-server:9090
+
+            # 当不设置 issuer-uri，就必须手动设置一下四个周知端点 URL：
+            authorizationUri: http://auth-server:9090/oauth2/authorize
+            token-uri: http://auth-server:9090/oauth2/token
+            jwk-set-uri: http://auth-server:9090/oauth2/jwks
+            user-info-uri: http://auth-server:9090/userinfo
+            # 启用 OIDC 协议时，指定 /userinfo 端点返回的 map 中的 key 对应的 value 当做接口
+            #   AuthenticatedPrincipal.getName 方法的返回值，即：用户名称
+            user-name-attribute: sub

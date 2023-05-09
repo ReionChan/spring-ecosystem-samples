@@ -1,0 +1,36 @@
+server:
+  error:
+    # 失效自动装配的错误白板页面
+    whitelabel:
+      enabled: false
+    # 自定错误页面 MVC 路径地址
+    path: /errorPage
+
+spring:
+  # 设置使用内嵌数据库时，执行表结构创建及数据插入
+  sql:
+    init:
+      # 指定使用嵌入式数据库时，才执行 DDL DML
+      mode: EMBEDDED
+      # 指定 DDL 路径
+      schemaLocations: classpath:/META-INF/sql/schema.sql
+      # 指定 DML 路径，由于初始用户交给 security 配置写入，故无需初始数据脚本
+      #dataLocations: classpath:/META-INF/sql/data.sql
+
+  # 打开 H2 数据库网页版管理页面，登录地址 localhost:8080/h2
+  # 注意：需要将此配置的路径从 Security 权限验证中排除
+  h2:
+    console:
+      enabled: true
+      path: /h2
+      settings:
+        # 是否允许其他主机访问
+        webAllowOthers: false
+        web-admin-password: admin
+
+  security:
+    # 已采用数据库的同名 user 用户，覆盖此处配置
+    # 此处配置单纯为了控制台不再打印密码
+    user:
+      name: user
+      password: pwd

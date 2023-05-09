@@ -1,0 +1,95 @@
+@startuml
+
+header "@ReionChan"
+footer "@ReionChan"
+
+skinparam linetype ortho
+skinparam backgroundColor WhiteSmoke
+title "<font size=30>Spring Security Builder and Configurer Model"
+
+abstract class AbstractConfiguredSecurityBuilder<O, B> {
+  + apply(C): C
+  + apply(C): C
+  # beforeConfigure(): void
+  # beforeInit(): void
+  # doBuild(): O
+  + getConfigurer(Class<C>): C
+  + getConfigurers(Class<C>): List<C>
+  + getOrBuild(): O
+  + getSharedObject(Class<C>): C
+  + getSharedObjects(): Map<Class<?>, Object>
+  + objectPostProcessor(ObjectPostProcessor<Object>): B
+  # performBuild(): O
+  # postProcess(P): P
+  + removeConfigurer(Class<C>): C
+  + removeConfigurers(Class<C>): List<C>
+  + setSharedObject(Class<C>, C): void
+}
+abstract class AbstractSecurityBuilder<O> {
+  + build(): O
+  # doBuild(): O
+  + getObject(): O
+}
+
+interface SecurityBuilder<O> << interface >> {
+  + build(): O
+}
+interface SecurityConfigurer<O, B> << interface >> {
+  + configure(B): void
+  + init(B): void
+}
+note "1. 扩展 SecurityBuilder 构建方法的处理阶段\n2. 引入 SecurityConfigurer 对 SecurityBuilder 进行配置" as note4
+class WebSecurity<Filter, WebSecurity> {
+}
+class HttpSecurity<DefaultSecurityFilterChain, HttpSecurity> {
+}
+class AuthenticationManagerBuilder<AuthenticationManager, AuthenticationManagerBuilder> {
+  - authenticationProviders : List<AuthenticationProvider>
+  # performBuild() : ProviderManager
+  ..内置对 ProviderManagerBuilder 构建器进行设置的配置器..
+  + inMemoryAuthentication() : InMemoryUserDetailsManagerConfigurer
+  + jdbcAuthentication() : JdbcUserDetailsManagerConfigurer
+  + userDetailsService(T userDetailsService) : DaoAuthenticationConfigurer
+  ..外部定义认证管理器直接由此添加到构建器..
+  + authenticationProvider(AuthenticationProvider) : AuthenticationManagerBuilder
+}
+interface AuthenticationManager {
+  + authenticate(Authentication) : Authentication
+}
+interface AuthenticationProvider {
+  + authenticate(Authentication) : Authentication
+  + supports(Class<?> authentication) : boolean
+}
+class ProviderManager {
+  - providers : List<AuthenticationProvider>
+  + ProviderManager(List<AuthenticationProvider>)
+}
+note bottom of ProviderManager
+ 1. 统一管理所有的 AuthenticationProvider 实现
+ 2. 将 AuthenticationManager 的认证请求
+     分发给收集的 AuthenticationProvider
+end note
+interface ProviderManagerBuilder<B extends ProviderManagerBuilder<B>>{
+  + authenticationProvider(AuthenticationProvider) : B
+}
+
+SecurityBuilder  ^-[#008200,dashed]-  AbstractSecurityBuilder
+SecurityBuilder <-[#595959,dashed]- "init&config"  SecurityConfigurer
+AbstractSecurityBuilder  ^-[#000082,plain]-  AbstractConfiguredSecurityBuilder
+SecurityConfigurer "1" <-[#595959,plain]-* "*"  AbstractConfiguredSecurityBuilder
+note4 -[#595959,dashed]->  AbstractConfiguredSecurityBuilder
+SecurityBuilder  <-[#595959,dashed]-  AbstractConfiguredSecurityBuilder
+
+skinparam groupInheritance 2
+AbstractConfiguredSecurityBuilder <|-[#000082,plain]- WebSecurity
+AbstractConfiguredSecurityBuilder <|-[#000082,plain]- HttpSecurity
+AbstractConfiguredSecurityBuilder <|-[#000082,plain]- AuthenticationManagerBuilder
+
+SecurityBuilder <-[#595959,dashed]- "O = AuthenticationManager"  ProviderManagerBuilder
+ProviderManagerBuilder <|-[#008200,dashed]-  AuthenticationManagerBuilder
+AuthenticationManager <|-[#008200,dashed]- ProviderManager
+AuthenticationProvider "1" <-[#595959,plain]-* "管理 *" ProviderManager
+AuthenticationProvider "收集 *" <-[#595959,plain]-* "1" AuthenticationManagerBuilder
+ProviderManager "performBuild() 1" <-[#595959,plain]-* "构建 1" AuthenticationManagerBuilder
+
+@enduml
