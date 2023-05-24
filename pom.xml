@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.reionchan</groupId>
-    <artifactId>spring-boot-3.0-samples</artifactId>
+    <artifactId>spring-ecosystem-samples</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>Spring Boot 3.0 示例工程</name>
-    <description>Spring Boot 3.0 有关技术的示例工程</description>
+    <name>Spring 生态系统示例工程</name>
+    <description>Spring 技术栈示例工程</description>
 
     <properties>
         <!-- JDK 版本及编译版本 -->
@@ -27,6 +27,9 @@
 
         <!-- Spring Boot 主版本号 -->
         <spring-boot.version>3.0.5</spring-boot.version>
+
+        <!-- Spring Cloud 主版本号 -->
+        <spring-cloud.version>2022.0.2</spring-cloud.version>
 
         <!-- Maven 相关插件，保持与 spring-boot-dependencies 依赖的相一致 -->
         <maven-war-plugin.version>3.3.2</maven-war-plugin.version>
@@ -62,6 +65,9 @@
     </developers>
 
     <modules>
+        <module>spring-framework-samples</module>
+        <module>spring-boot-samples</module>
+        <module>spring-cloud-samples</module>
         <module>spring-security-samples</module>
     </modules>
 
@@ -116,18 +122,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-install-plugin</artifactId>
                 <version>${maven-install-plugin.version}</version>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
