@@ -5,7 +5,11 @@
 ## spring-boot-samples 3.0.x
 
 ## spring-cloud-samples 2022.0.x
-
+ * gateway-samples
+   * gateway-basic
+   * gateway-circuitbreaker
+   * gateway-redis-ratelimit
+   * gateway-nacos
 
 ## spring-security-samples 6.0.x
   * security-out-of-box
