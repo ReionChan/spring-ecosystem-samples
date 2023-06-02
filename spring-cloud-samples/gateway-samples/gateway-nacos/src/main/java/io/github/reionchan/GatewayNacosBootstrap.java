@@ -23,6 +23,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *
  *  5. 编写单元测试 {@literal  GatewayNacosTest}
  *
+ *  当启动端口不通的多个本网关服务时，请求多次下面 URL：
+ *      http://localhost:8080/gateway-nacos/echoAppName
+ *
+ *  将会返回不同端口的结果，例如：
+ *      gateway-nacos@8080
+ *      gateway-nacos@8081
+ *
+ *  证明实现了网关自身的负载均衡
  *
  * </pre>
  *

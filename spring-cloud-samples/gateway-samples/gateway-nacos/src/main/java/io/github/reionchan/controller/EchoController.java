@@ -22,6 +22,6 @@ public class EchoController {
      */
     @RequestMapping("/echoAppName")
     public String echoAppName() {
-        return env.getProperty("spring.application.name");
+        return String.format("%s@%s", env.getProperty("spring.application.name"), env.getProperty("server.port"));
     }
 }
