@@ -12,7 +12,7 @@
     <artifactId>authorization-server</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>6.1-OAuth2 服务端</name>
+    <name>4.6.1-OAuth2 服务端</name>
     <description>使用 Spring Security Oauth2 Authorization Server 构建的支持 OAuth2 协议的服务端</description>
 
     <properties>

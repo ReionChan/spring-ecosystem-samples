@@ -11,7 +11,7 @@
 
     <artifactId>spring-framework-samples</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>Spring Framework 6.0.x 相关样例</name>
+    <name>1-Spring Framework 6.0.x 相关样例</name>
     <packaging>pom</packaging>
 
     <properties>

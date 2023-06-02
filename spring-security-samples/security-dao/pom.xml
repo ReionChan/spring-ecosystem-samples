@@ -12,7 +12,7 @@
     <artifactId>security-dao</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>4-DAO 查询用户进行认证示例</name>
+    <name>4.4-DAO 查询用户进行认证示例</name>
     <description>使用 DAO 查询的用户进行认证操作</description>
 
     <properties>

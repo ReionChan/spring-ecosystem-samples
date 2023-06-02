@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>Spring 生态系统示例工程</name>
+    <name>=== Spring 生态系统示例工程 ===</name>
     <description>Spring 技术栈示例工程</description>
 
     <properties>

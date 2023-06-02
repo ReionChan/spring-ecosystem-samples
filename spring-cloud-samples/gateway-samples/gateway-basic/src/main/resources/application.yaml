@@ -1,0 +1,30 @@
+server:
+  # 设置服务器端口
+  port: 8080
+
+spring:
+  application:
+    # 应用名称设置 gateway-basic
+    name: gateway-basic
+
+  cloud:
+    # 网关配置
+    gateway:
+      # --- 自定义路由方式三：使用 PropertiesRouteDefinitionLocator ---
+      routes:
+      - id: prop_path_route
+        uri: http://httpbin.org
+        predicates:
+        # 便捷配置
+        - Path=/status/{codes},true
+        # 正常配置
+        #- name: Path
+        #  args:
+        #    patterns: /status/{codes}
+        #    matchTrailingSlash: true
+
+# logging
+logging:
+  level:
+    # 设置 gateway 相关方法日志级别为 TRACE
+    org.springframework.cloud.gateway: TRACE

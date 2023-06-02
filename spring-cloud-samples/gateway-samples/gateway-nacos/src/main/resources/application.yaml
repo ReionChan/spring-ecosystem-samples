@@ -1,0 +1,33 @@
+server:
+  # 设置服务器端口
+  port: 8080
+
+spring:
+  application:
+    # 应用名称设置 gateway-nacos
+    name: gateway-nacos
+
+  cloud:
+    # Nacos 配置
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+
+    loadbalancer:
+      # 启用 Nacos 的负载均衡器
+      nacos:
+        enabled: true
+
+    # 网关配置
+    gateway:
+      # 网关服务发现
+      discovery:
+        locator:
+          # 开启网关与服务发现集成
+          enabled: true
+
+# logging
+logging:
+  level:
+    # 设置 gateway 相关方法日志级别为 TRACE
+    org.springframework.cloud.gateway: TRACE

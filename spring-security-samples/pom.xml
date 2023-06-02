@@ -11,7 +11,7 @@
 
     <artifactId>spring-security-samples</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>Spring Security 6.0.x 相关样例</name>
+    <name>4-Spring Security 6.0.x 相关样例</name>
     <packaging>pom</packaging>
 
     <properties>
