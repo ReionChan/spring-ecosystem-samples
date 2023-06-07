@@ -1,6 +1,6 @@
 server:
   # 设置服务器端口
-  port: 8080
+  port: 8081
 
 spring:
   application:

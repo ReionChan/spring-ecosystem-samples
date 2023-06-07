@@ -9,31 +9,30 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>gateway-nacos</artifactId>
+    <artifactId>bar-service</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>3.1.4-Gateway 集成 Nacos (实现集群服务发现、服务负载均衡)</name>
+    <name>3.1.5.3-bar 测试服务</name>
     <packaging>jar</packaging>
     <description>
-        利用 Nacos 发现集群服务，生成具备负载均衡的集群服务器路由规则。
-        提供 API 网关服务，即：只暴露 serviceId 隐藏服务器的 IP、端口。
+        一个用来测试网关反向代理 API 文档的 SpringMVC 服务。
     </description>
 
     <properties>
-        <!-- springdoc-openapi-starter-webflux-ui 支持 Spring Boot 3 -->
-        <springdoc-openapi-starter-webflux-ui.version>2.1.0</springdoc-openapi-starter-webflux-ui.version>
+        <!-- springdoc-openapi-starter-webmvc-ui 支持 Spring Boot 3 -->
+        <springdoc-openapi-starter-webmvc-ui.version>2.1.0</springdoc-openapi-starter-webmvc-ui.version>
     </properties>
 
     <dependencies>
-        <!-- 引入 Spring Cloud Gateway Starter -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-gateway</artifactId>
-        </dependency>
-
-        <!-- 引入 Spring Boot Actuator Starter-->
+        <!-- 引入 Spring Boot Actuator Starter -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- 引入 Spring Boot Web Starter -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <!-- 引入 Spring Cloud Alibaba Nacos Discovery Starter -->
@@ -48,17 +47,10 @@
             <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
 
-        <!-- 引入 Spring Cloud Circuit Breaker Starter -->
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-circuitbreaker-reactor-resilience4j</artifactId>
-        </dependency>
-
-        <!-- 引入 Spring Doc Open Api WebFlux UI Starter -->
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
-            <version>${springdoc-openapi-starter-webflux-ui.version}</version>
+            <groupId>io.github.reionchan</groupId>
+            <artifactId>commons</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <!-- *************** 测试依赖 ************ -->
@@ -67,13 +59,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- 引入 Reactor Test -->
-        <dependency>
-            <groupId>io.projectreactor</groupId>
-            <artifactId>reactor-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

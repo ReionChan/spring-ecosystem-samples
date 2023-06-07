@@ -1,0 +1,28 @@
+{
+  "failResponse": {
+    "timeStamp": 1686054962,
+    "code": 400,
+    "status": "Bad Request!",
+    "success": false,
+    "message": "Bad Request!",
+    "data": null
+  },
+
+  "errorResponse": {
+    "timeStamp": 1686054962,
+    "code": 500,
+    "status": "Internal Server Error!",
+    "success": false,
+    "message": "Internal Server Error!",
+    "data": null
+  },
+
+  "notAllowResponse": {
+    "timeStamp": 1686054962,
+    "code": 405,
+    "status": "Method Not Allowed!",
+    "success": false,
+    "message": "Method Not Allowed!",
+    "data": null
+  }
+}

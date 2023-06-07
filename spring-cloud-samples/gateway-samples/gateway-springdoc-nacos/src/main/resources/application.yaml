@@ -1,0 +1,88 @@
+server:
+  # 设置服务器端口
+  port: 8080
+
+spring:
+  application:
+    # 应用名称设置 gateway-springdoc-nacos
+    name: gateway-springdoc-nacos
+
+  cloud:
+
+    # === Spring Cloud 服务发现 ===
+    discovery:
+      enabled: true
+
+    # === Spring Cloud 负载均衡 ===
+    loadbalancer:
+      nacos:
+        enabled: true
+
+    # === Spring Cloud 服务注册 ===
+    service-registry:
+      auto-registration:
+        enabled: true
+
+    # === Nacos 中间件配置 ===
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+
+    # === 网关配置 ===
+    gateway:
+      discovery:
+        locator:
+          # 开启网关与服务发现集成
+          enabled: true
+      # 路由规则
+      routes:
+        # 将以 /v3/api-docs/serviceId 路径，路由到 /serviceId/v3/api-docs
+        - id: springdoc-route
+          uri: http://localhost:${server.port}
+          predicates:
+            - Path=/v3/api-docs/**
+          filters:
+            - RewritePath=/v3/api-docs/(?<path>.*), /$\{path}/v3/api-docs
+
+# === SpringDoc ===
+springdoc:
+  # swagger 文档设置
+  swagger-ui:
+    # 文档路径，默认 /swagger-ui.html
+    path: /swagger-ui.html
+    # 设置不同服务的文档显示名称及链接地址
+    urls:
+      - name: gateway-doc
+        url: /v3/api-docs/gateway-springdoc-nacos
+      - name: foo
+        url: /v3/api-docs/foo-service
+      - name: bar
+        url: /v3/api-docs/bar-service
+    # 设置接口方法按字母排序
+    operations-sorter: alpha
+    # 设置接口标签按字母排序
+    tags-sorter: alpha
+
+  # 设置是否显示 actuator 端口
+  #show-actuator: false
+
+  # 设置是否使用管理端口
+  #use-management-port: true
+
+# === Management ===
+#management:
+#  server:
+#    port: 9090
+#  endpoints:
+#    web:
+#      exposure:
+#        include: swagger-ui
+
+maven:
+  version: ${project.version:1.0-SNAPSHOT}
+
+# logging
+logging:
+  level:
+    # 设置 gateway 相关方法日志级别为 TRACE
+    org.springframework.cloud.gateway: TRACE

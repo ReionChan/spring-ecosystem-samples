@@ -21,6 +21,10 @@
         <module>gateway-circuitbreaker</module>
         <module>gateway-redis-ratelimit</module>
         <module>gateway-nacos</module>
+        <module>gateway-springdoc-nacos</module>
+        <module>foo-service</module>
+        <module>bar-service</module>
+        <module>commons</module>
     </modules>
 
     <properties>

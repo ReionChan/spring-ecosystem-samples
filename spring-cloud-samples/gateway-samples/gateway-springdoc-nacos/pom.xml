@@ -9,13 +9,12 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>gateway-nacos</artifactId>
+    <artifactId>gateway-springdoc-nacos</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>3.1.4-Gateway 集成 Nacos (实现集群服务发现、服务负载均衡)</name>
+    <name>3.1.5-Gateway 集成 Nacos、SpringDoc 多服务 API 文档</name>
     <packaging>jar</packaging>
     <description>
-        利用 Nacos 发现集群服务，生成具备负载均衡的集群服务器路由规则。
-        提供 API 网关服务，即：只暴露 serviceId 隐藏服务器的 IP、端口。
+        借助 Nacos 的服务发现能力，通过 Gateway 整合集群多服务的 SpringDoc API 文档。
     </description>
 
     <properties>
@@ -48,17 +47,23 @@
             <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
 
-        <!-- 引入 Spring Cloud Circuit Breaker Starter -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-circuitbreaker-reactor-resilience4j</artifactId>
-        </dependency>
-
         <!-- 引入 Spring Doc Open Api WebFlux UI Starter -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
             <version>${springdoc-openapi-starter-webflux-ui.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.reionchan</groupId>
+            <artifactId>commons</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springdoc</groupId>
+                    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- *************** 测试依赖 ************ -->
@@ -77,5 +82,16 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <resources>
+            <!-- 将 POM 中编译时变量赋值给资源文件 -->
+            <!-- https://maven.apache.org/guides/getting-started/index.html#How_do_I_filter_resource_files -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
 
 </project>

@@ -1,0 +1,37 @@
+server:
+  # 设置服务器端口
+  port: 9001
+
+spring:
+  application:
+    # 应用名称设置
+    name: bar-service
+
+  cloud:
+
+    # === Spring Cloud 服务发现 ===
+    discovery:
+      enabled: true
+
+    # === Spring Cloud 负载均衡 ===
+    loadbalancer:
+      nacos:
+        enabled: true
+
+    # === Spring Cloud 服务注册 ===
+    service-registry:
+      auto-registration:
+        enabled: true
+
+    # === Nacos 中间件配置 ===
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+
+# === SpringDoc ===
+springdoc:
+  # 设置是否显示 actuator 端口
+  show-actuator: true
+
+maven:
+  version: ${project.version:1.0-SNAPSHOT}
