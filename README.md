@@ -10,6 +10,9 @@
    * gateway-circuitbreaker
    * gateway-redis-ratelimit
    * gateway-nacos
+   * gateway-springdoc-nacos
+     * commons
+     * foo-service
 
 ## spring-security-samples 6.0.x
   * security-out-of-box
