@@ -41,14 +41,23 @@ public class SpringDocConfig {
 
     public static final String RESPONSE_NOT_ALLOW = "notAllowResponse";
 
-    @Value("${maven.version}")
-    private String version;
+    /**
+     * Swagger UI 接口测试 - 网关服务器地址
+     */
+    @Value("${gateway.url:http://localhost:8080}")
+    private String gatewayUrl;
 
+    /**
+     * Swagger UI 接口测试 - 网关负载均衡路由时指定的服务名
+     */
     @Value("${spring.application.name}")
     private String appName;
 
-    @Value("${gateway.url:http://localhost:8080}")
-    private String gatewayUrl;
+    /**
+     * Swagger UI 显示的应用版本信息 - 来源于项目的 Maven 配置版本
+     */
+    @Value("${maven.version}")
+    private String version;
 
     @Autowired
     private ReadResponseJson readResponseJson;
@@ -85,7 +94,9 @@ public class SpringDocConfig {
         components.addResponses(RESPONSE_ERROR, errorResponse);
 
         return new OpenAPI()
+            // 设置 Swagger UI 页面调用测试服务器地址
             .servers(List.of(new Server().url(gatewayUrl + "/" + appName)))
+            // 设置 Swagger 文档中通用组件
             .components(components)
             .info(new Info()
                 .title("Gateway 集成 SpringDoc")
