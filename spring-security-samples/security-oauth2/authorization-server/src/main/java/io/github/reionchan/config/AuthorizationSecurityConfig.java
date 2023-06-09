@@ -15,6 +15,7 @@ import io.github.reionchan.service.IUserService;
 import io.github.reionchan.util.RSAKeyUtil;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -59,6 +60,9 @@ public class AuthorizationSecurityConfig {
 
     @Autowired
     private IUserService userService;
+
+    @Value("${user.home}")
+    private String keyRoot;
 
     @Bean
     @Order(1)
@@ -167,7 +171,7 @@ public class AuthorizationSecurityConfig {
 
     @Bean
     public JWKSource<SecurityContext> jwkSource() {
-        KeyPair keyPair = RSAKeyUtil.loadOrCreateThenSaveByPemFile(Paths.get("keys"), 2048);
+        KeyPair keyPair = RSAKeyUtil.loadOrCreateThenSaveByPemFile(Paths.get(keyRoot,"keys"), 2048);
         RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
         RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
         RSAKey rsaKey = new RSAKey.Builder(publicKey)
