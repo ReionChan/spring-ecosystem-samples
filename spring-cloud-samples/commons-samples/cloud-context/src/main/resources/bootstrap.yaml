@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: boot
+
+# Bootstrap 上下文日志等级
+logging:
+  level:
+    org.springframework: debug

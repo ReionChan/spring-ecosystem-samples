@@ -5,47 +5,43 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.github.reionchan</groupId>
-        <artifactId>gateway-samples</artifactId>
+        <artifactId>commons-samples</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>gateway-basic</artifactId>
+    <artifactId>cloud-context</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>3.2.1-Gateway 基本（自定义路由的途径）</name>
+    <name>3.1.1-Cloud Application Context</name>
     <packaging>jar</packaging>
-    <description>几种自定义路由的方式</description>
+    <description>Spring Cloud Bootstrap 上下文服务特性演示样例</description>
 
     <properties>
 
     </properties>
 
     <dependencies>
-        <!-- 引入 Spring Cloud Gateway Starter -->
+        <!-- 引入 Spring Cloud Bootstrap Starter -->
+        <!--
+            激活 Cloud Bootstrap 两种方式：
+            1. 引入 spring-cloud-starter-bootstrap 依赖
+            2. 环境变量 spring.cloud.bootstrap.enabled 设置为 true
+        -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-gateway</artifactId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
         </dependency>
 
-        <!-- 引入 Spring Boot Actuator Starter-->
+        <!-- 引入 Spring Boot Actuator Starter -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
-        <!-- *************** 测试依赖 ************ -->
-
-        <!-- 引入 Spring Boot Test Starter -->
+        <!-- 引入 Spring Web 方便观察 Environment 管理端点 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!-- 引入 Reactor Test -->
-        <dependency>
-            <groupId>io.projectreactor</groupId>
-            <artifactId>reactor-test</artifactId>
-            <scope>test</scope>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
     </dependencies>
 

@@ -12,7 +12,7 @@
 
     <artifactId>commons</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>3.1.5.1-commons 通用组件</name>
+    <name>3.2.5.1-commons 通用组件</name>
     <packaging>jar</packaging>
     <description>
         不同服务共享组件

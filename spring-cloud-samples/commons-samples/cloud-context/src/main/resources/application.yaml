@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: app
+
+management:
+  # === 所有端点设置 ===
+  endpoints:
+    web:
+      # web 下暴露所有端点
+      exposure:
+        include: "*"
+
+  # === 单个端点设置 ===
+  endpoint:
+    # --- env 端点设置 ---
+    env:
+      # 显示所有值，默认值都用 * 代替
+      show-values: always
+      # 允许修改环境变量
+      post:
+        enabled: true
+
+    # --- configprops 端点设置 ---
+    configprops:
+      # 开启
+      enabled: true
+      # 显示所有值，默认值都用 * 代替
+      show-values: always
+
+    # --- refresh 端点设置 ---
+    # 重启 bootstrap context，并刷新 @RefreshScope Bean
+    refresh:
+      enabled: true
+
+    # --- restart 端点设置 ---
+    # 重启 ApplicationContext
+    restart:
+      enabled: true
+
+    # --- pause 端点设置 ---
+    # 开启暂停 调用 ApplicationContext 的 stop() 生命周期方法
+    pause:
+      enabled: true
+
+    # --- resume 端点设置 ---
+    # 开启恢复 调用 ApplicationContext 的 start() 生命周期方法
+    resume:
+      enabled: true
+
+# 应用上下文日志等级
+logging:
+  level:
+    org.springframework: info
+
+env:
+  # 本地 env.p1 变量
+  p1: p1-value-in-local-application-yaml
+  # 本地 env.p2 变量
+  p2: p2-value-in-local-application-yaml

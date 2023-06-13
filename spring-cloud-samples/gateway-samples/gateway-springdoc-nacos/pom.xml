@@ -12,7 +12,7 @@
 
     <artifactId>gateway-springdoc-nacos</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>3.1.5-Gateway 集成 Nacos、SpringDoc 多服务 API 文档</name>
+    <name>3.2.5-Gateway 集成 Nacos、SpringDoc 多服务 API 文档</name>
     <packaging>jar</packaging>
     <description>
         借助 Nacos 的服务发现能力，通过 Gateway 整合集群多服务的 SpringDoc API 文档。

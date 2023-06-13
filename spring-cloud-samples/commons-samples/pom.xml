@@ -10,25 +10,18 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>gateway-samples</artifactId>
+    <artifactId>commons-samples</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>3.2-Spring Cloud Gateway 相关样例</name>
+    <name>3.1-Spring Cloud Commons 相关样例</name>
     <packaging>pom</packaging>
-    <description>Spring Cloud Gateway API 网关相关样例</description>
+    <description>Spring Cloud Commons 相关特性演示样例</description>
 
     <modules>
-        <module>gateway-basic</module>
-        <module>gateway-circuitbreaker</module>
-        <module>gateway-redis-ratelimit</module>
-        <module>gateway-nacos</module>
-        <module>gateway-springdoc-nacos</module>
-        <module>commons</module>
-        <module>foo-service</module>
+        <module>cloud-context</module>
     </modules>
 
     <properties>
-        <!-- Spring Cloud Alibaba 项目版本，2022.0.x 支持 Spring Boot 3 -->
-        <spring-cloud-alibaba.version>2022.0.0.0-RC2</spring-cloud-alibaba.version>
+
     </properties>
 
 </project>
