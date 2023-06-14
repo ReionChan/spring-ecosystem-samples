@@ -13,6 +13,8 @@ import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEven
 import org.springframework.cloud.autoconfigure.RefreshAutoConfiguration;
 import org.springframework.cloud.bootstrap.BootstrapApplicationListener;
 import org.springframework.cloud.bootstrap.config.PropertySourceLocator;
+import org.springframework.cloud.bootstrap.encrypt.EncryptionBootstrapConfiguration;
+import org.springframework.cloud.bootstrap.encrypt.EnvironmentDecryptApplicationInitializer;
 import org.springframework.cloud.context.environment.EnvironmentChangeEvent;
 import org.springframework.cloud.context.properties.ConfigurationPropertiesRebinder;
 import org.springframework.cloud.context.refresh.ContextRefresher;
@@ -29,6 +31,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySources;
+import org.springframework.security.crypto.encrypt.TextEncryptor;
 
 import java.io.IOException;
 import java.util.List;
@@ -172,6 +175,15 @@ import java.util.Set;
  *        }
  *      }
  *
+ *   6. bootstrap 是支持外部配置源中的属性配置进行加密、解密，只需在 bootstrap.yaml 文件中包含 encrypt.* 的设置
+ *
+ *      原理：
+ *          bootstrap 上下文 Spring Factories 机制装载的配置类 {@link EncryptionBootstrapConfiguration}
+ *          在检测到 bootstrap.yaml 配置了属性 encrypt.* 相关设置后进行条件装配加解密 Bean {@link TextEncryptor}
+ *          而在该配置类中装配的 {@link EnvironmentDecryptApplicationInitializer} 能够提供对外部化配置源中的加密属性值
+ *          进行解密处理。
+ *
+ *
  * </pre>
  *
  * @author Reion
@@ -259,8 +271,13 @@ public class EnabledBootstrapContextBootstrap {
         //   被 @ConfigurationProperties 注解的 Bean 销毁并重新初始化，观察日志中有关 EnvProperties 生命周期方法打印信息
         //   类似地，LoggingRebinder 也会重新读取环境变量中的 logging.level.* 属性，重新设置日志级别
 
-        //7. @RefreshScope 注解的类，也会在事件发生时，重现
+        //7. @RefreshScope 注解的类，在 /refresh 端点刷新时会进行重新构造初始化，原理参考本类上面的注释
 
+        //8. 加解密处理，启动完成后 bootstrap 已经将装载好的加解密器放入容器中，直接获取即可
+        TextEncryptor encryptor = context.getBean(TextEncryptor.class);
+        log.info("明文：{} 密文: {}", "Secret-Value", encryptor.encrypt("Secret-Value"));
+        // env.p3 属性值在 CustomizePropertySourceLocator 外部属性配置中，设置成以 {cipher} 为前缀密文，加载时将会被自动解密
+        log.info("外部配置源变量 env.p3 解密后的值：{}", appEnv.getProperty("env.p3"));
     }
     // @formatter: off
 }

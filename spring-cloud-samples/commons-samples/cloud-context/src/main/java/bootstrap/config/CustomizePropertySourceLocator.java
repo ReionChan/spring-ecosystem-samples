@@ -38,8 +38,11 @@ public class CustomizePropertySourceLocator implements PropertySourceLocator {
         Map<String, Object> mapSource = new HashMap<>();
         // 外部配置变量 env.p1
         mapSource.put("env.p1", "p1-value-in-customize-external-property-source");
-        // 外部配置变量 env.p1
+        // 外部配置变量 env.p2
         mapSource.put("env.p2", "p2-value-in-customize-external-property-source");
+        // 外部配置变量 env.p3，采用对称加密方式 key=please-change-me salt=cafebabe，参考 bootstrap.yaml 文件
+        mapSource.put("env.p3", "{cipher}c45bd3c09c840f298ca2776d454b923ba2561e89dd30b346954cbb27c43959ca");
+
 
         // 步骤一：默认情况，外部配置的变量是会覆盖应用本地的同名属性。通过如下设置，允许应用本地变量覆盖外部同名变量
         mapSource.put("spring.cloud.config.allowOverride", true);// 设置本地变量允许覆盖外部变量权限

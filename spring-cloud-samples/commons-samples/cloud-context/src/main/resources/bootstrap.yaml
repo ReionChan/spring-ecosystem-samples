@@ -2,6 +2,12 @@ spring:
   application:
     name: boot
 
+# Spring Cloud 加解密设置
+encrypt:
+  # === 对称加密密钥设置 ===
+  key: please-change-me
+  salt: cafebabe
+
 # Bootstrap 上下文日志等级
 logging:
   level:
