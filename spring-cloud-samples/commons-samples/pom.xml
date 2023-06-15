@@ -18,6 +18,7 @@
 
     <modules>
         <module>cloud-context</module>
+        <module>abstract-registry-discovery</module>
     </modules>
 
     <properties>

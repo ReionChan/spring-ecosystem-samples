@@ -16,8 +16,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>gateway-samples</module>
         <module>commons-samples</module>
+        <module>gateway-samples</module>
     </modules>
 
     <properties>

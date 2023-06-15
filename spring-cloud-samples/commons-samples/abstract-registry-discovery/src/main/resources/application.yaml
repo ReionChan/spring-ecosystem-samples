@@ -1,0 +1,71 @@
+server:
+  port: 8080
+  # 优雅的关闭服务器
+  shutdown: graceful
+
+spring:
+  # === 应用配置 ===
+  application:
+    name: registry-discovery
+
+  cloud:
+    # === 服务注册配置 ===
+    service-registry:
+      # --- 设置自动注册快速失败 ---
+      auto-registration:
+        # true 时，强制依赖服务注册客户端实现，否则启动异常
+        fail-fast: true
+
+    # === Nacos 配置 ===
+    nacos:
+      # --- Nacos 服务发现配置 ---
+      discovery:
+        # 服务发现服务器地址
+        server-addr: localhost:8848
+        # 设置负载均衡权重
+        weight: 1
+
+    # === 服务发现配置 ===
+    discovery:
+      # --- 客户端配置 ---
+      client:
+        simple:
+          instances:
+            # foo 服务集群
+            foo:
+              -
+                secure: false
+                host: foo
+                port: 8081
+              -
+                secure: false
+                host: foo
+                port: 8081
+
+            # bar 服务集群
+            bar:
+              -
+                secure: true
+                host: bar
+                port: 9091
+              -
+                secure: true
+                host: bar
+                port: 9091
+
+    # === Spring Cloud 兼容性验证器 ===
+    compatibility-verifier:
+      # 默认 false (关闭校验)
+      enabled: true
+      # 自定义兼容的 Spring Boot 版本
+      compatible-boot-versions:
+        - "3.0.x"
+        - "3.1.x"
+
+management:
+  # === Actuator 端点设置 ===
+  endpoints:
+    web:
+      exposure:
+        include: serviceregistry, features
+
