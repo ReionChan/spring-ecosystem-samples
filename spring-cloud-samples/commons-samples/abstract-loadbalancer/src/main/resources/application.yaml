@@ -1,0 +1,45 @@
+server:
+  port: 8080
+  # 优雅的关闭服务器
+  shutdown: graceful
+
+spring:
+  # === 应用配置 ===
+  application:
+    name: loadbalancer
+
+  cloud:
+    # === 负载均衡配置 ===
+    loadbalancer:
+      # --- 预先加载负载均衡客户端上下文 ---
+      eager-load:
+        # 填写预先加载的服务名称，此为列表形式
+        clients:
+          - loadbalancer
+      # --- Nacos 负载均衡器是否启用 ---
+      nacos:
+        enabled: false
+
+    # === 服务注册配置 ===
+    service-registry:
+      # --- 设置自动注册快速失败 ---
+      auto-registration:
+        # true 时，强制依赖服务注册客户端实现，否则启动异常
+        fail-fast: true
+
+    # === Nacos 配置 ===
+    nacos:
+      # --- Nacos 服务发现配置 ---
+      discovery:
+        # 服务发现服务器地址
+        server-addr: localhost:8848
+        # 设置负载均衡权重
+        weight: 1
+
+management:
+  # === Actuator 端点设置 ===
+  endpoints:
+    web:
+      exposure:
+        include: serviceregistry, features
+

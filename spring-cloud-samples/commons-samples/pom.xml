@@ -19,6 +19,7 @@
     <modules>
         <module>cloud-context</module>
         <module>abstract-registry-discovery</module>
+        <module>abstract-loadbalancer</module>
     </modules>
 
     <properties>
