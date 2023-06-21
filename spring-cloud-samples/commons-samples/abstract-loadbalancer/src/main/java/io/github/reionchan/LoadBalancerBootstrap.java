@@ -12,6 +12,8 @@ import org.springframework.cloud.client.discovery.composite.reactive.ReactiveCom
 import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClient;
 import org.springframework.cloud.client.loadbalancer.*;
 import org.springframework.cloud.client.loadbalancer.reactive.*;
+import org.springframework.cloud.client.serviceregistry.AbstractAutoServiceRegistration;
+import org.springframework.cloud.client.serviceregistry.AutoServiceRegistration;
 import org.springframework.cloud.context.named.NamedContextFactory;
 import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClientConfiguration;
 import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClients;
@@ -37,7 +39,8 @@ import outside.scan.config.CustomLoadBalancerConfiguration;
  * 但是，负载均衡在项目结构上，与服务注册、服务发现略有不同。
  *
  * 服务注册
- *  commons 模块只定义自动注册接口 {@link }、和一个模版抽象实现 {@link }，
+ *  commons 模块只定义自动注册接口 {@link AutoServiceRegistration}，
+ *  和一个模版抽象实现 {@link AbstractAutoServiceRegistration}，
  *  具体实现留给第三方（Eureka、Consul、Nacos）
  *
  * 服务发现
