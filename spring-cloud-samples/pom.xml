@@ -17,6 +17,9 @@
 
     <modules>
         <module>commons-samples</module>
+        <module>config-samples</module>
+        <module>loadbalancer-samples</module>
+        <module>circuitbreaker-samples</module>
         <module>gateway-samples</module>
     </modules>
 

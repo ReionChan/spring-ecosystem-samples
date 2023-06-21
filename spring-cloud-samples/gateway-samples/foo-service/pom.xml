@@ -12,7 +12,7 @@
 
     <artifactId>foo-service</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>3.2.5.2-foo 测试服务</name>
+    <name>3.5.5.2-foo 测试服务</name>
     <packaging>jar</packaging>
     <description>
         一个用来测试网关反向代理 API 文档的 SpringMVC 服务。

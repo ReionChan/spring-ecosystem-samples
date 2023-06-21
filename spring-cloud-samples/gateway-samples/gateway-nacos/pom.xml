@@ -12,7 +12,7 @@
 
     <artifactId>gateway-nacos</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>3.2.4-Gateway 集成 Nacos (实现集群服务发现、服务负载均衡)</name>
+    <name>3.5.4-Gateway 集成 Nacos (实现集群服务发现、服务负载均衡)</name>
     <packaging>jar</packaging>
     <description>
         利用 Nacos 发现集群服务，生成具备负载均衡的集群服务器路由规则。
