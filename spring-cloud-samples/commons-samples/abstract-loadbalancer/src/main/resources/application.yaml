@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8088
   # 优雅的关闭服务器
   shutdown: graceful
 
@@ -33,13 +33,26 @@ spring:
       discovery:
         # 服务发现服务器地址
         server-addr: localhost:8848
-        # 设置负载均衡权重
-        weight: 1
+        # 设置负载均衡权重 (Nacos 实现的负载均衡器读取此属性值)
+        weight: 8
+        # 设置此实例是否是临时性（此处设置为 false，即 persistent 永久性，才会生成 instanceId）
+        # 更改为 false 后，如果启动服务报错，请参考 https://zhuanlan.zhihu.com/p/571875080
+        ephemeral: false
+        # 负载均衡元数据（一些扩展属性）
+        metadata:
+          # 权重数据 （设置给 ZonePreferenceServiceInstanceListSupplier 读取）
+          weight: 8
+          # 区域标识 （设置给 ZonePreferenceServiceInstanceListSupplier 读取）
+          zone: foo-zone
+          # 生成 instanceId 方法，默认 simple，Nacos 2.3.0 支持 snowflake
+          # 参考：https://github.com/alibaba/nacos/issues/9001
+          preserved.instance.id.generator: simple
+          hint: bar-hint
 
 management:
   # === Actuator 端点设置 ===
   endpoints:
     web:
       exposure:
-        include: serviceregistry, features
+        include: info, health, serviceregistry, features
 

@@ -5,6 +5,15 @@
 ## spring-boot-samples 3.0.x
 
 ## spring-cloud-samples 2022.0.x
+ * commons-samples
+   * cloud-context
+   * abstract-registry-discovery
+   * abstract-loadbalancer
+   * abstract-circuitbreaker
+ * config-samples
+ * loadbalancer-samples
+   * service-instance-list-supplier-decoration
+ * circuitbreaker-samples
  * gateway-samples
    * gateway-basic
    * gateway-circuitbreaker

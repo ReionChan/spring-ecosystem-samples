@@ -1,0 +1,82 @@
+server:
+  port: 8080
+  # 优雅的关闭服务器
+  shutdown: graceful
+
+spring:
+  # === 应用配置 ===
+  application:
+    name: instanceListSupplier
+
+  cloud:
+    # === 负载均衡配置 ===
+    loadbalancer:
+      # --- 预先加载负载均衡客户端上下文 ---
+      eager-load:
+        # 填写预先加载的服务名称，此为列表形式
+        clients:
+          - instanceListSupplier
+      # --- 缓存设置 ---
+      cache:
+        ttl: PT1S
+      # --- 实例健康检测设置 ---
+      health-check:
+        # 设置健康检测间隔时间
+        interval: 5S
+        # 设置根据健康监测结果刷新实例列表
+        refetch-instances: false
+        # 设置根据健康监测结果刷新实例列表间隔时间
+        refetch-instances-interval: 5S
+        # 指定 serviceId 的健康监测路径，如果没有设置此属性，默认 /actuator/health
+        path:
+          # 此处设置服务 loadbalancer 与默认健康监测路径一致
+          loadbalancer: "/actuator/health"
+      # --- 设置区标识 ---
+      # 设置仅使用区域标识为 bar-zone 的实例
+      #zone: bar-zone
+      # --- 同一 Session 使用相同服务实例设置 ---
+      sticky-session:
+        # 当原始 cookie 的服务不可用，设置是否将新选中的实例 ID 追加放入 cookie 中
+        add-service-instance-cookie: true
+        # 设置 cookie 名称，默认：sc-lb-instance-id
+        instance-id-cookie-name: "sc-lb-instance-id"
+      # --- 设置 Hint 请求头名称 ---
+      hint-header-name: "X-SC-LB-Hint"
+      # --- 指定 serviceId 的 hint 值，默认所有服务的 hint 为 default ---
+      hint:
+        loadbalancer: "foo-hint"
+      # --- 开启 Micrometer stats ---
+      stats:
+        micrometer:
+          enabled: true
+      # --- Nacos 负载均衡器是否启用 ---
+      nacos:
+        enabled: false
+
+    # === 服务注册配置 ===
+    service-registry:
+      # --- 设置自动注册快速失败 ---
+      auto-registration:
+        # true 时，强制依赖服务注册客户端实现，否则启动异常
+        fail-fast: true
+
+    # === Nacos 配置 ===
+    nacos:
+      # --- Nacos 服务发现配置 ---
+      discovery:
+        # 服务发现服务器地址
+        server-addr: localhost:8848
+        # 设置负载均衡权重
+        weight: 1
+
+management:
+  # === Actuator 端点设置 ===
+  endpoints:
+    web:
+      exposure:
+        # 增加 metrics 端点
+        include: serviceregistry, features, metrics
+
+#logging:
+#  level:
+#    com.alibaba.nacos: debug

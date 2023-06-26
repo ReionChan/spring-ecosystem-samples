@@ -16,6 +16,10 @@
     <packaging>pom</packaging>
     <description>Spring Cloud LoadBalancer 相关演示样例</description>
 
+    <modules>
+        <module>service-instance-list-supplier-decoration</module>
+    </modules>
+
     <properties>
 
     </properties>
