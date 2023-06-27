@@ -15,10 +15,12 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 @Configuration
 public class RequestBasedStickySessionServiceConfig {
+
     @Bean
     public ServiceInstanceListSupplier requestBasedStickyServiceInstanceListSupplier(ConfigurableApplicationContext context) {
         log.info("=== RequestBasedStickyServiceConfig 设置 requestBasedStickyServiceInstanceListSupplier ===");
+        //TODO withCaching() makes sticky session not working. see https://github.com/spring-cloud/spring-cloud-commons/issues/1249
         return ServiceInstanceListSupplier.builder().withBlockingDiscoveryClient().withRequestBasedStickySession()
-                .build(context);
+                .withCaching().build(context);
     }
 }

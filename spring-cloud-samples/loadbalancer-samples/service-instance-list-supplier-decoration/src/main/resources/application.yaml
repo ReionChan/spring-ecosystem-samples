@@ -18,7 +18,11 @@ spring:
           - instanceListSupplier
       # --- 缓存设置 ---
       cache:
-        ttl: PT1S
+        # 缓存存活时间 Time to Live
+        ttl: PT35S
+        # Caffeine 设置，将失效上面的 ttl 配置
+        caffeine:
+          spec: "initialCapacity=256,expireAfterWrite=PT6S"
       # --- 实例健康检测设置 ---
       health-check:
         # 设置健康检测间隔时间

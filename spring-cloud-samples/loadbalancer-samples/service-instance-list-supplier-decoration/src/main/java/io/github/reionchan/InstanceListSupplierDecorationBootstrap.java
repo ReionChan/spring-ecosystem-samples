@@ -7,9 +7,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.CacheManager;
 import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.loadbalancer.*;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerLifecycle;
 import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClient;
-import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClients;
 import org.springframework.cloud.loadbalancer.cache.CaffeineBasedLoadBalancerCacheManager;
 import org.springframework.cloud.loadbalancer.cache.DefaultLoadBalancerCacheManager;
 import org.springframework.cloud.loadbalancer.core.*;
@@ -184,8 +184,8 @@ public class InstanceListSupplierDecorationBootstrap {
         inspectSupplier(supplier);
         org.springframework.cloud.client.loadbalancer.LoadBalancerClient client = context.getBean(org.springframework.cloud.client.loadbalancer.LoadBalancerClient.class);
         // RequestBasedStickySessionServiceInstanceListSupplier 采用 RestTemplate 形式测试 （因为需要根据 request 中的 cookie 来进行负载均衡）
-        if (!(supplier instanceof RequestBasedStickySessionServiceInstanceListSupplier
-                || supplier instanceof HintBasedServiceInstanceListSupplier)) {
+        if (!(containTargetDelegate(supplier, RequestBasedStickySessionServiceInstanceListSupplier.class)
+                || containTargetDelegate(supplier, HintBasedServiceInstanceListSupplier.class))) {
             ServiceInstance instance = null;
             for (int i=0; i<10; i++) {
                 Thread.sleep(1000);
@@ -238,17 +238,18 @@ public class InstanceListSupplierDecorationBootstrap {
          *
          */
         RestTemplate restTemplate = context.getBean("loadBalancedRestTemplate", RestTemplate.class);
-        if (supplier instanceof RequestBasedStickySessionServiceInstanceListSupplier
-                || supplier instanceof HintBasedServiceInstanceListSupplier) {
-            for (int i=0; i<3; i++) {
+        if (containTargetDelegate(supplier, RequestBasedStickySessionServiceInstanceListSupplier.class)
+                || containTargetDelegate(supplier, HintBasedServiceInstanceListSupplier.class)) {
+            for (int i=0; i<30; i++) {
+                Thread.sleep(3000);
                 HttpHeaders headers = new HttpHeaders();
                 String info = "";
-                if (supplier instanceof RequestBasedStickySessionServiceInstanceListSupplier) {
+                if (containTargetDelegate(supplier, RequestBasedStickySessionServiceInstanceListSupplier.class)) {
                     List<String> cookies = List.of("sc-lb-instance-id=192.168.1.102#8088#DEFAULT#DEFAULT_GROUP@@loadbalancer");
                     headers.put(HttpHeaders.COOKIE, cookies);
                     info = "Cookie 粘性选择端口为 8088 的服务实例，";
                 }
-                if (supplier instanceof HintBasedServiceInstanceListSupplier) {
+                if (containTargetDelegate(supplier, HintBasedServiceInstanceListSupplier.class)) {
                     headers.add("X-SC-LB-Hint", "bar-hint");
                     info = "Header 选择 Hint 为 bar-hint 的服务实例，";
                 }
@@ -273,5 +274,19 @@ public class InstanceListSupplierDecorationBootstrap {
         }
         strBuf.append(tab + supplier.getClass().getSimpleName() + "\n");
         log.info(strBuf.toString());
+    }
+
+    /**
+     * 检查 source 中是否包装 targetClass 的类型的 ServiceInstanceListSupplier
+     */
+    public static boolean containTargetDelegate(ServiceInstanceListSupplier source, Class<? extends ServiceInstanceListSupplier> targetClass) {
+        boolean result = false;
+        while (source instanceof DelegatingServiceInstanceListSupplier delegate) {
+            source = delegate.getDelegate();
+            if (source.getClass().equals(targetClass)) {
+                return true;
+            }
+        }
+        return source.getClass().equals(targetClass);
     }
 }
