@@ -34,6 +34,12 @@
             <artifactId>resilience4j-bulkhead</artifactId>
         </dependency>
 
+        <!-- 引入 Resilience4J Micrometer -->
+        <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-micrometer</artifactId>
+        </dependency>
+
         <!-- 引入 Spring Boot Web Starter -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

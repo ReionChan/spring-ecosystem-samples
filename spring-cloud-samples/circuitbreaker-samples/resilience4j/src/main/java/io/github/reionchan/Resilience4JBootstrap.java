@@ -19,6 +19,7 @@ import io.github.resilience4j.spring6.timelimiter.configure.TimeLimiterConfigura
 import io.github.resilience4j.spring6.timelimiter.configure.TimeLimiterConfigurationProperties;
 import io.github.resilience4j.springboot3.bulkhead.autoconfigure.BulkheadAutoConfiguration;
 import io.github.resilience4j.springboot3.circuitbreaker.autoconfigure.AbstractCircuitBreakerConfigurationOnMissingBean;
+import io.github.resilience4j.springboot3.circuitbreaker.autoconfigure.CircuitBreakerMetricsAutoConfiguration;
 import io.github.resilience4j.springboot3.circuitbreaker.autoconfigure.CircuitBreakerProperties;
 import io.github.resilience4j.springboot3.timelimiter.autoconfigure.AbstractTimeLimiterConfigurationOnMissingBean;
 import io.github.resilience4j.springboot3.timelimiter.autoconfigure.TimeLimiterProperties;
@@ -168,6 +169,21 @@ import java.util.stream.IntStream;
  * 隔仓有两种形式的实现方式：
  * 1. 信号量形式的 {@link SemaphoreBulkhead}
  * 2. 线程池形式的 {@link FixedThreadPoolBulkhead}
+ *
+ * ==========================
+ * Resilience4j Metrics 端点
+ * ==========================
+ * 引入 spring-boot-starter-actuator、resilience4j-micrometer 依赖后，
+ * 将会自动装配 {@link CircuitBreakerMetricsAutoConfiguration}。
+ *
+ * 在 application.yaml 文件设置属性：
+ *  management.endpoints.web.endpoints.include=metrics
+ * 暴露 metrics 端点
+ *
+ * 就可通过替换 {requiredMetricName} 为 resilience4j.* 开头的 metric 获得统计信息
+ *  http://localhost:8080/actuator/metrics/{requiredMetricName}
+ * 例如：
+ *  http://localhost:8080/actuator/metrics/resilience4j.circuitbreaker.calls
  *
  * </pre>
  *

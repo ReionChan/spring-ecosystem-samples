@@ -22,7 +22,6 @@ spring:
         # 是否开启 Resilience4J Bulkhead
         enabled: true
 
-
 # === Spring Boot Resilience4J 设置 ===
 resilience4j:
   # -- 熔断器配置 --
@@ -74,6 +73,11 @@ resilience4j:
         # 等待队列容量
         queue-capacity: 2
 
-
+management:
+  endpoints:
+    web:
+      endpoints:
+        # 暴露 metrics 端点，观察 Resilience4j 统计
+        include: metrics
 
 
