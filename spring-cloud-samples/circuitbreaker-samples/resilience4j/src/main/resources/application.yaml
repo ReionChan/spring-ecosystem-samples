@@ -1,0 +1,79 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: circuitbreaker-resilience4j
+
+  cloud:
+    # === Spring Cloud Resilience4J 设置 ===
+    circuitbreaker.resilience4j:
+      # 是否开启
+      enabled: true
+      # 是否关闭线程池，关闭且未开启 Bulkhead 时，将失去时间限制机制
+      # 参考：Resilience4JCircuitBreaker.run
+      disableThreadPool: true
+      # 是否开启基于信号量的并发量控制 Bulkhead，默认 false，即使用线程池的并发量控制
+      enableSemaphoreDefaultBulkhead: false
+
+    # === Spring Cloud 熔断器 Bulkhead 设置 ===
+    circuitbreaker.bulkhead:
+      resilience4j:
+        # 是否开启 Resilience4J Bulkhead
+        enabled: true
+
+
+# === Spring Boot Resilience4J 设置 ===
+resilience4j:
+  # -- 熔断器配置 --
+  circuitbreaker:
+    # 配置
+    configs:
+      # 全局兜底默认
+      default:
+        # 滑动窗口大小
+        slidingWindowSize: 100
+        # 开启熔断后恢复等待时间
+        wait-duration-in-open-state: PT60S
+
+  # -- 时间限制配置 --
+  timelimiter:
+    # 配置
+    configs:
+      # 全局兜底默认
+      default:
+        timeout-duration: 2s
+        # 超过时间限制是否中断任务的执行线程
+        cancel-running-future: true
+      groupC:
+        timeout-duration: 4s
+    # 实例
+    instances:
+      slowB:
+        timeout-duration: 5s
+      slowC:
+        timeout-duration: 3s
+
+  # -- Semaphore bulkhead 配置 --
+  bulkhead:
+    backends:
+      backendA:
+        # 最大并发调用数
+        max-concurrent-calls: 2
+        # 并发最大等待时间
+        max-wait-duration: 0s
+
+  # -- threadPool bulkhead 配置
+  thread-pool-bulkhead:
+    backends:
+      backendB:
+        # 核心线程数
+        core-thread-pool-size: 2
+        # 最大核心线程数
+        max-thread-pool-size: 2
+        # 等待队列容量
+        queue-capacity: 2
+
+
+
+

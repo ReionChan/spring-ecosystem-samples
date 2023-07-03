@@ -20,4 +20,8 @@
 
     </properties>
 
+    <modules>
+        <module>resilience4j</module>
+    </modules>
+
 </project>
