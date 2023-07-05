@@ -1,0 +1,41 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server-git
+
+  cloud:
+    # === Cloud Config 配置 ===
+    config:
+      # --- Config Server 配置 ---
+      server:
+        # Git 方式存储
+        git:
+          # Git 外部化配置 URI
+          uri: git@github.com:organization/config-repo.git
+          # 指定外部化配置 URI 克隆到本地时的目录，不配置时使用系统临时目录
+          basedir: file://${user.home}/local/dir
+          # 通过已克隆到本地的库来配置 URI
+          #uri: file://${user.home}/local/dir
+          # Git 外部化配置搜索路径模式，{application} 应用名 {profile} 配置属性 {label} 分支名或标签
+          search-paths: config/{application}/{profile}
+          # 强制与远端配置同步
+          force-pull: true
+          # 配置服务与 Git 同步刷新频率，单位秒，默认 0，即：每次发生请求时才同步
+          refresh-rate: 0
+          # 删除本地中远端已不存在的分支
+          delete-untracked-branches: true
+          # 默认 Label
+          default-label: master
+          # Git SSH 服务器公钥算法，例如： ssh-dss, ssh-rsa, ssh-ed25519, ecdsa-sha2-nistp256 等
+          host-key-algorithm: ssh-rsa
+          # Git SSH 服务器公钥
+          host-key: PLEASE_REPLACE_THIS_WITH_GIT_SSH_SERVER_PUBLIC_KEY
+          # 设置为 true 必须配置下面的 private-key 属性，false 时读取本机的 .ssh 文件夹下的 key
+          ignore-local-ssh-settings: true
+          # 配置服务器（即：本机的私钥）
+          private-key: |
+                        -----BEGIN RSA PRIVATE KEY-----
+                        PLEASE_REPLACE_THIS_KEY_WITH_YOUR_CONFIG_SERVER_PRIVATE_KEY
+                        -----END RSA PRIVATE KEY-----

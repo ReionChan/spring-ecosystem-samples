@@ -16,8 +16,8 @@
     <packaging>pom</packaging>
     <description>Spring Cloud Config 相关演示样例</description>
 
-    <properties>
-
-    </properties>
+    <modules>
+        <module>config-server-git</module>
+    </modules>
 
 </project>
