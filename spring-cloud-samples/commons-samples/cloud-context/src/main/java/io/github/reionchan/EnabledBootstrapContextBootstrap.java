@@ -17,11 +17,14 @@ import org.springframework.cloud.bootstrap.encrypt.EncryptionBootstrapConfigurat
 import org.springframework.cloud.bootstrap.encrypt.EnvironmentDecryptApplicationInitializer;
 import org.springframework.cloud.context.environment.EnvironmentChangeEvent;
 import org.springframework.cloud.context.properties.ConfigurationPropertiesRebinder;
+import org.springframework.cloud.context.refresh.ConfigDataContextRefresher;
 import org.springframework.cloud.context.refresh.ContextRefresher;
 import org.springframework.cloud.context.refresh.LegacyContextRefresher;
 import org.springframework.cloud.context.scope.GenericScope;
 import org.springframework.cloud.context.scope.refresh.RefreshScope;
 import org.springframework.cloud.endpoint.RefreshEndpoint;
+import org.springframework.cloud.endpoint.event.RefreshEvent;
+import org.springframework.cloud.endpoint.event.RefreshEventListener;
 import org.springframework.cloud.logging.LoggingRebinder;
 import org.springframework.cloud.util.PropertyUtils;
 import org.springframework.context.ApplicationContext;
@@ -114,6 +117,15 @@ import java.util.Set;
  *      当发生 {@link EnvironmentChangeEvent} 事件时，@RefreshScope 机制会使得被标注的 Bean 重新执行初始化，
  *      并将新生成的原始类实例覆盖 AOP 代理类的目标对象，从而达到动态刷新的目的。
  *
+ *      原理：
+ *          该注解语义的实现来源于自动装配配置类 {@link RefreshAutoConfiguration} 中的 {@link ContextRefresher}、
+ *          {@link RefreshEventListener}、{@link RefreshScope} 几个重要的 Bean 协作完成。
+ *          其刷新主要是由 {@link ContextRefresher} 实例调用 {@link RefreshScope} 的刷新方法完成配置刷新，
+ *          而驱动 {@link ContextRefresher} 执行 ContextRefresher#refresh() 方法，由以下几种来源：
+ *          1. {@link RefreshEventListener} 监听器监听到 {@link RefreshEvent} 事件
+ *          2. {@link RefreshEndpoint} Spring Boot Actuator 的 /refresh 刷新端点触发
+ *          3. Spring Cloud 配置客户端中的 ConfigClientWatch 类的定时调度触发
+ *
  *      {@link RefreshScopeAnnotationBean} 示例就是被 @RefreshScope 注解的 Bean, 它依赖的环境属性配置 {@link EnvProperties}
  *      是通过构造方法进行注入的，如果要实现动态刷新，只能通过构造方法重新绑定新的 {@link EnvProperties}，但是重新执行构造方法生成的
  *      {@link RefreshScopeAnnotationBean} 实例，不能重新赋值给之前就依赖它的 {@link RefreshScopeRefreshedListener}。
@@ -159,7 +171,7 @@ import java.util.Set;
  *                    自动装载的实例为 {@link LegacyContextRefresher} 具体由自动装配类 {@link RefreshAutoConfiguration} 控制，
  *                    该 refresh() 方法包含 {@link ContextRefresher#refreshEnvironment()} 方法，它会产生 {@link EnvironmentChangeEvent} 事件
  *
- *          3. 而 {@link EnvironmentChangeListener} 中有对 {@link RefreshScopeAnnotationBean} 的调用，故打破懒加载，会进行
+ *          3. 而 {@link RefreshScopeRefreshedListener} 中有对 {@link RefreshScopeAnnotationBean} 的调用，故打破懒加载，会进行
  *             {@link RefreshScopeAnnotationBean} 的重新构造。仔细观察下面示例的日志中 RefreshScopeAnnotationBean '@' 后的
  *             hashCode 值，它显示 AOP 代理对象中的原始目标对象已经被替换
  *

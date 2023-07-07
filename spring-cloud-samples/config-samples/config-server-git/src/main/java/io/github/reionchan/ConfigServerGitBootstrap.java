@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.config.server.EnableConfigServer;
 
 /**
- * 配置服务器启动器
+ * 基于 Git 的配置服务器启动器
  *
  * <pre>
  *
@@ -16,8 +16,8 @@ import org.springframework.cloud.config.server.EnableConfigServer;
  **/
 @EnableConfigServer
 @SpringBootApplication
-public class ConfigServerBootstrap {
+public class ConfigServerGitBootstrap {
     public static void main(String[] args) {
-        SpringApplication.run(ConfigServerBootstrap.class, args);
+        SpringApplication.run(ConfigServerGitBootstrap.class, args);
     }
 }

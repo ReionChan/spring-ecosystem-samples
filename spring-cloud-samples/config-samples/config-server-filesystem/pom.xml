@@ -7,14 +7,13 @@
         <groupId>io.github.reionchan</groupId>
         <artifactId>config-samples</artifactId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>config-server-git</artifactId>
+    <artifactId>config-server-filesystem</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>3.2.2-Config Server 使用 Git 样例</name>
+    <name>3.2.1-Config Server 使用本地文件样例</name>
     <packaging>jar</packaging>
-    <description>Config Server 由 Git 充当存储配置的样例</description>
+    <description>Config Server 由本地文件充当存储配置的样例</description>
 
     <dependencies>
         <!-- 引入 Spring Cloud Starter -->
