@@ -6,6 +6,7 @@ import org.springframework.cloud.config.environment.Environment;
 import org.springframework.cloud.config.server.EnableConfigServer;
 import org.springframework.cloud.config.server.config.ConfigServerMvcConfiguration;
 import org.springframework.cloud.config.server.config.ConfigServerProperties;
+import org.springframework.cloud.config.server.config.EnvironmentRepositoryConfiguration;
 import org.springframework.cloud.config.server.encryption.EncryptionController;
 import org.springframework.cloud.config.server.environment.*;
 import org.springframework.cloud.config.server.resource.ResourceController;
@@ -53,6 +54,14 @@ import org.springframework.http.ResponseEntity;
  * 其中 {@link CompositeEnvironmentRepository} 提供对不同配置存储库封装调用的功能，
  * 它的子类 {@link SearchPathCompositeEnvironmentRepository} 同时实现了
  * {@link SearchPathLocator} 接口，具备获取所有搜索路径的能力。
+ * 而在 {@link EnvironmentRepositoryConfiguration} 自动装配时，
+ * 根据 spring.profiles.active 属性中指定的 profile 条件装配不同
+ * 类型的 {@link EnvironmentRepository} Bean，然后汇总成为 {@link SearchPathCompositeEnvironmentRepository}
+ * 本例中，由于演示基于本地文件系统的实现类，故设置
+ *  spring.profiles.active=native
+ * 来激活 {@link NativeEnvironmentRepository} Bean
+ * 值得注意，当 spring.profiles.active 属性中的 profile 没有在配置类有匹配时，
+ * 将会激活默认的 {@link MultipleJGitEnvironmentRepository} 基于 Git 的配置服务。
  *
  * 1. 本项目演示基于文件系统的配置库 {@link NativeEnvironmentRepository} 实现，
  *  它读取 classpath 下面的配置文件，本例中位置：classpath:/config/
