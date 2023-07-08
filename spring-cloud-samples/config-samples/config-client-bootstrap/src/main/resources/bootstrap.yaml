@@ -1,0 +1,11 @@
+spring:
+  # 指定应用名称
+  application:
+    name: config-client-bootstrap
+  # === Spring Cloud 设置 ===
+  cloud:
+    config:
+      uri: http://localhost:8888
+      profile: dev
+      # 配置服务不可达时本应用启动失败
+      fail-fast: true

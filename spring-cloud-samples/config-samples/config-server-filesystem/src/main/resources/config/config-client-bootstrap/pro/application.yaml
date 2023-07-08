@@ -1,0 +1,12 @@
+server:
+  port: 8081
+
+demo:
+  # 使用非对称加密，请在 application.yaml 中将 encrypt.keystore.* 注解打开
+  # 密文：Got it! （双引号或单引号结合反斜杠可以实现单行字符串在 yaml 中换行显示）
+  encrypt-key: "{cipher}AQA2oyKt1uvoZc/Jsc+Wqn/KU/sdgr22pVyI9goQqxTRRmSedQYl/SfLlE83or8\
+          XLQDWKbsGFYNa7OD7rDFEWyUzyQP92MIrBl1RHls8pX1ArtMqQb8/rz+SU/Mgxjjxs6d0y4\
+          cpvVLE8tbKc0uKpI4l78vhObgMQFkECAOuHhxsXT9UMOY0KKkL2SrvX30SeAr9g3b1V7GEF\
+          A5EPviKywssfrRlWwB0FFakgQ7pG9kmfEX522p7QJRvjYiUqc4cDTQY+ISSEgvDFUiJiB3X\
+          L0iUVzUD/JtNStTC2f8TvIzr1P0hgljL5sctbC9n9pri6uzzzI0q2DQojgOmdQV7nic7baM\
+          04J8RZAGp/S+u3Pxa0QMlGOTC/snCmoZy5dIqPog="

@@ -11,7 +11,7 @@
 
     <artifactId>config-server-filesystem</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>3.2.1-Config Server 使用本地文件样例</name>
+    <name>3.2.1-Config Server 使用本地文件</name>
     <packaging>jar</packaging>
     <description>Config Server 由本地文件充当存储配置的样例</description>
 

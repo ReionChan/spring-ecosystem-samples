@@ -1,5 +1,7 @@
 package bootstrap.config;
 
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.cloud.bootstrap.BootstrapApplicationListener;
 import org.springframework.cloud.bootstrap.BootstrapConfiguration;
 import org.springframework.cloud.bootstrap.BootstrapImportSelector;
 import org.springframework.cloud.bootstrap.BootstrapImportSelectorConfiguration;
@@ -19,7 +21,9 @@ import java.util.Map;
  * 通过 Spring Factories 机制，被 bootstrap 上下文加载到其容器中，实现定制外部化属性源配置
  *
  * 原理：
- *    由 {@link BootstrapImportSelectorConfiguration} 通过 @Import 导入 {@link BootstrapImportSelector} 配置文件导入器。
+ *    激活 bootstrap 上下文时，在 {@link BootstrapApplicationListener} 中构建引导上下文方法中，
+ *    通过 {@link SpringApplicationBuilder} 引入配置类 {@link BootstrapImportSelectorConfiguration}
+ *    后者通过 @Import 导入 {@link BootstrapImportSelector} 配置文件导入器。
  *    该导入器读取 spring.factories 文件中配置属性为 {@link BootstrapConfiguration} 类型的值，
  *    其中就包含类 {@link PropertySourceBootstrapConfiguration}，而该配置文件中依赖注入 bootstrap 上下文容器中所有
  *    类型为 {@link PropertySourceLocator} 的属性源定位器 Bean。

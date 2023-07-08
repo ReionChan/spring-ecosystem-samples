@@ -8,40 +8,27 @@ spring:
   # === 条件装配配置 ===
   profiles:
     # 设置启用 native 的配置
-    active: native
+    active: dev,native
 
   cloud:
     # === Cloud Config 配置 ===
     config:
       # --- Config Server 配置 ---
       server:
-
         # 本地配置
         native:
           # 配置文件搜索路径，默认 [classpath:/,classpath:/config/,file:./,file:./config/]
           # 当不设置此属性时，默认的 classpath 中本配置服务自身的 application.yaml 文件都会被排除
           search-locations: classpath:/config/{application}/{profile}
-          # 不在搜索路径后追加 {label}
+          # 默认 label
+          default-label: ${spring.profiles.active}
+          # 是否在搜索路径后追加 label
           addLabelLocations: false
-        # 发送给配置客户端时是否解密，默认 true，关闭时不影响加解密 Http 端口的正常使用
+        # 加解密设置
         encrypt:
+          # 发送给配置客户端时是否解密，默认 true，关闭将交给客户端自己解密
+          # 关闭时不影响加解密 Http 端口的正常使用
           enabled: true
-
-# 加解密设置
-encrypt:
-  # === 对称加密密钥设置 ===
-  key: please-change-me
-  salt: cafebabe
-  # === 非对称 RSA 密钥设置
-  # 生成 jks 命令：
-  # keytool -genkeypair -alias testkey -keyalg RSA \
-  #   -dname "CN=Web Server,OU=Unit,O=Organization,L=City,S=State,C=CN" \
-  #   -keypass letmein -keystore server.jks -storepass letmein
-  #key-store:
-    #type: jks
-    #location: classpath:key/server.jks
-    #password: letmein
-    #alias: testkey
 
 management:
   # === 端点配置 ===
@@ -52,4 +39,35 @@ management:
         # 暴露下面端点
         include: env, info, health, refresh
 
+---
+# dev 时激活的配置
+spring:
+  config:
+    activate:
+      on-profile: dev
 
+# 加解密设置
+encrypt:
+  # === 对称加密密钥设置 ===
+  key: please-change-me
+  salt: cafebabe
+
+---
+# pro 时激活的配置
+spring:
+  config:
+    activate:
+      on-profile: pro
+
+# 加解密设置
+encrypt:
+  # === 非对称 RSA 密钥设置
+  # 生成 jks 命令：
+  # keytool -genkeypair -alias testkey -keyalg RSA \
+  #   -dname "CN=Web Server,OU=Unit,O=Organization,L=City,S=State,C=CN" \
+  #   -keypass letmein -keystore server.jks -storepass letmein
+  key-store:
+    type: jks
+    location: classpath:key/server.jks
+    password: letmein
+    alias: testkey

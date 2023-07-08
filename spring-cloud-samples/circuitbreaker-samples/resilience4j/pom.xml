@@ -11,7 +11,7 @@
 
     <artifactId>resilience4j</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>3.4.1-Resilience4J CircuitBreaker 样例</name>
+    <name>3.4.1-CircuitBreaker Resilience4J 实现</name>
     <packaging>jar</packaging>
     <description>Spring Cloud CircuitBreaker 使用 Resilience4J 实现样例</description>
 

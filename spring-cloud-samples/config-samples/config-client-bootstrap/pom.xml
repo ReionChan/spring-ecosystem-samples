@@ -5,18 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.github.reionchan</groupId>
-        <artifactId>loadbalancer-samples</artifactId>
+        <artifactId>config-samples</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>service-instance-list-supplier-decoration</artifactId>
-    <name>3.3.1-ServiceInstanceListSupplier 装饰实现</name>
+    <artifactId>config-client-bootstrap</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>3.2.3-Config Client 使用 bootstrap 方式</name>
     <packaging>jar</packaging>
-    <description>ServiceInstanceListSupplier 几种装饰实现样例</description>
-
-    <properties>
-
-    </properties>
+    <description>Config Client 由 bootstrap 方式连接配置服务加载配置的样例</description>
 
     <dependencies>
         <!-- 引入 Spring Cloud Starter -->
@@ -25,22 +22,16 @@
             <artifactId>spring-cloud-starter</artifactId>
         </dependency>
 
-        <!-- 引入 Spring Cloud Loadbalancer Starter -->
+        <!-- 引入 Spring Cloud Bootstrap Starter -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
         </dependency>
 
-        <!-- 引入 Caffeine 激活自动装配 CaffeineBasedLoadBalancerCacheManager 类型的 Bean -->
+        <!-- 引入 Spring Cloud Config Starter -->
         <dependency>
-            <groupId>com.github.ben-manes.caffeine</groupId>
-            <artifactId>caffeine</artifactId>
-        </dependency>
-
-        <!-- 引入 Spring Cloud Alibaba Nacos Discovery Starter -->
-        <dependency>
-            <groupId>com.alibaba.cloud</groupId>
-            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
         </dependency>
 
         <!-- 引入 Spring Boot Web Starter -->

@@ -57,10 +57,10 @@ import org.springframework.http.ResponseEntity;
  * 1. 本项目演示基于文件系统的配置库 {@link NativeEnvironmentRepository} 实现，
  *  它读取 classpath 下面的配置文件，本例中位置：classpath:/config/
  *  启动本项目，浏览器访问下面的地址，可以返回不同格式的配置信息：
- *      http://localhost:8888/foo-app/default
- *      http://localhost:8888/foo-app-default.yaml
- *      http://localhost:8888/foo-app-default.json
- *      http://localhost:8888/foo-app-default.properties
+ *      http://localhost:8888/config-client-bootstrap/dev
+ *      http://localhost:8888/config-client-bootstrap-dev.yaml
+ *      http://localhost:8888/config-client-bootstrap-dev.json
+ *      http://localhost:8888/config-client-bootstrap-dev.properties
  *
  * 2. 在 application.yaml 配置中增加属性配置
  *  encrypt.key
