@@ -34,6 +34,18 @@
             <artifactId>spring-cloud-starter-config</artifactId>
         </dependency>
 
+        <!-- 引入 Spring Boot AOP Starter -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
+        <!-- 引入 Spring Retry -->
+        <dependency>
+            <groupId>org.springframework.retry</groupId>
+            <artifactId>spring-retry</artifactId>
+        </dependency>
+
         <!-- 引入 Spring Boot Web Starter -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

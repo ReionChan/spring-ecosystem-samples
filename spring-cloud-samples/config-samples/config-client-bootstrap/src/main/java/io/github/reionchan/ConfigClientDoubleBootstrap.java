@@ -9,6 +9,7 @@ import org.springframework.cloud.config.client.*;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
+import org.springframework.retry.interceptor.RetryOperationsInterceptor;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -37,6 +38,28 @@ import org.springframework.web.client.RestTemplate;
  * Http 通信使用 {@link ConfigClientRequestTemplateFactory} 工厂构建的 {@link RestTemplate}，
  * 具体逻辑参考：{@link ConfigServicePropertySourceLocator#locate(Environment)}
  *
+ * 1. 设置配置客户端快速失败（即：客服端启动时，无法连接配置服务端时，直接停止启动）
+ *  spring.cloud.config.fail-fast=true
+ * 2. 为配置客户端增加连接配置服务的重试机制（引入 spring-retry）
+ *  2.1 引入 spring-retry、spring-boot-starter-aop 依赖
+ *  2.2 启用快速失败，即属性设置为 true
+ *  原理：
+ *      已入这两依赖，激活 {@link ConfigServiceBootstrapConfiguration.RetryConfiguration}
+ *      它其中定义 {@link RetryOperationsInterceptor}，而该拦截器被上面提及的方法
+ *      {@link ConfigServicePropertySourceLocator#locate(Environment)} 上的注释，
+ *      并通过 AOP 切入 @Retryable 执行重试逻辑
+ *
+ *      {@code
+ *          @Retryable(interceptor = "configServerRetryInterceptor")
+ *          public org.springframework.core.env.PropertySource<?> locate(Environment environment){
+ *              // ...
+ *          }
+ *      }
+ *
+ *  观察日志，可以发现当配置服务器不可用时，会重试 6 次，当然允许通过属性
+ *      spring.cloud.config.retry.*
+ *  自定义重试参数
+ *
  * </pre>
  *
  * @author Reion
@@ -50,6 +73,9 @@ public class ConfigClientDoubleBootstrap {
         Environment env = context.getEnvironment();
         // 如果获得的属性值为空，请确保 bootstrap.yaml 的属性 spring.cloud.config.profile 的值
         // 包含在配置服务的 spring.profiles.active 属性配置值之中
+        // profile 可选值：
+        //      dev 采用对称加密
+        //      pro 采用 RAS 加密
         log.info("来自配置服务器的属性 demo.encrypt-key = {}", env.getProperty("demo.encrypt-key"));
     }
 }
