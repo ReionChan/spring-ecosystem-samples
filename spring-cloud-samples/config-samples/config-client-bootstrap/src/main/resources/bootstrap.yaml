@@ -9,3 +9,6 @@ spring:
       profile: dev
       # 配置服务不可达时本应用启动失败
       fail-fast: true
+      # --- 连接配置服务器重试设置 ---
+      retry:
+        max-attempts: 3

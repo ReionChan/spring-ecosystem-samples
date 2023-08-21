@@ -21,6 +21,11 @@ import org.springframework.web.client.RestTemplate;
  * 子应用上下文，具体可以参考 3.1.1 Cloud Application Context 的描述，至于
  * Spring Boot 2.4.0 之后采取的 <a href="https://docs.spring.io/spring-cloud-config/docs/current/reference/html/#config-data-import">Config Data Import</a> 将在下一个示例说明。
  *
+ * 想要在 Spring Boot 2.4.0 之后仍然使用 bootstrap 上下文机制来加载外部化配置文件，
+ * 可以通过以下两种方法之一来实现（原理参考 3.1.1 Cloud Application Context 中的 {@link EnabledBootstrapContextBootstrap}）：
+ * 1. pom.xml 中引入 spring-cloud-starter-bootstrap 依赖
+ * 2. 环境变量 spring.cloud.bootstrap.enabled 设置为 true
+ *
  * Bootstrap 上下文机制使用 Spring 工厂机制装载启动配置类 {@link BootstrapConfiguration}，
  * 而 spring-cloud-config-client 配置客户端包中，此属性配置了两个配置类：
  *  {@link ConfigServiceBootstrapConfiguration}

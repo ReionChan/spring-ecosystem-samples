@@ -495,7 +495,7 @@ public class Resilience4JBootstrap {
     public static String slowMock(int seconds) {
         int sec = seconds > 0 ? seconds : 1;
         try {
-            Thread.sleep(sec * 1000);
+            Thread.sleep(sec * 1000L);
             return "success";
         } catch (InterruptedException e) {
             return "InterruptedException";

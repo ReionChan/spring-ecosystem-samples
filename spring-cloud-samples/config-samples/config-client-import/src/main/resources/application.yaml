@@ -1,0 +1,28 @@
+spring:
+
+  # 指定应用名称
+  application:
+    name: config-client-import
+
+  # === Spring Boot Data Import 配置 ===
+  config:
+    import: "configserver:http://localhost:8888?fail-fast=true&max-attempts=3"
+    # 指定 profile 下才激活加载 import 所指定的配置
+    # 这里指定的 profile 需包含在 SpringApplication.additionalProfiles 内，否则将由于缺失 spring.config.import 而报错
+    activate:
+      on-profile: dev
+
+  # === Spring Cloud 配置 ===
+  cloud:
+    # --- 配置客户端属性参数 ConfigClientProperties ---
+    # 影响请求 configServer 时所传递的 profile 参数值
+    # 当设置此属性为非 default 的配置时，将优先使用该设置，
+    # 否则检查 ConfigServerConfigDataResource.profiles 是否为空
+    #   不为空，使用 ConfigServerConfigDataResource.profiles.activeProfiles
+    #   为空，使用 default
+    config:
+      profile: dev
+
+logging:
+  level:
+    org.springframework.boot.context.config: trace

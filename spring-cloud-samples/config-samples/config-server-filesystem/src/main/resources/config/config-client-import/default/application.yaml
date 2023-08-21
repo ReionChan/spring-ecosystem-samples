@@ -1,0 +1,11 @@
+server:
+  port: 8081
+
+#spring:
+#  profiles:
+#    active: dev
+
+demo:
+  # 使用对称加密，请在 application.yaml 中将 encrypt.key 注解打开
+  # 密文：default: got it!
+  encrypt-key: '{cipher}dcb30bd6f47588d4ae53777819e6a05a6d762db0e493e4e45389da49632d3692235389e6e8553ec8c22eeb36f0f3b7d8'
