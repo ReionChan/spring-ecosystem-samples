@@ -17,6 +17,7 @@ import org.springframework.core.env.Environment;
  *  <a href="https://spring.io/blog/2020/08/14/config-file-processing-in-spring-boot-2-4">Config File Processing</a>
  *  <a href="https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-Config-Data-Migration-Guide">Spring Boot Config Data Migration Guide</a>
  *  <a href="https://docs.spring.io/spring-cloud-config/docs/current/reference/html/#config-data-import">Config Data Import</a>
+ *  <a href="https://deepkondah.medium.com/springboot-2-4-x-configuration-2c01a15f2f64">SpringBoot 2.4.x Configuration</a>
  *
  * 由于不再使用 bootstrap 方式，故无需 bootstrap.yaml 文件，
  * 仅使用 application.yaml 文件配置即可。
@@ -24,6 +25,7 @@ import org.springframework.core.env.Environment;
  * 支持 Config Data Import 特性的核心抽象包括如下接口：
  * 1. {@link ConfigDataLocationResolver}
  * 2. {@link ConfigDataLoader}
+ * 详细的配置导入过程，请参考：<a href="https://deepkondah.medium.com/springboot-2-4-x-configuration-2c01a15f2f64">SpringBoot 2.4.x Configuration</a>
  *
  *
  * //启动时，会去配置服务器请求三次配置

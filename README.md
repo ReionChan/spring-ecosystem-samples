@@ -14,6 +14,7 @@
    * [config-server-filesystem](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/config-samples/config-server-filesystem)
    * [config-server-git](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/config-samples/config-server-git)
    * [config-client-bootstrap](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/config-samples/config-client-bootstrap)
+   * [config-client-import](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/config-samples/config-client-import)
  * [loadbalancer-samples](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/loadbalancer-samples)
    * [service-instance-list-supplier-decoration](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/loadbalancer-samples/service-instance-list-supplier-decoration)
  * [circuitbreaker-samples](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/circuitbreaker-samples)
