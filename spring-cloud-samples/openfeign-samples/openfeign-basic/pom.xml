@@ -10,9 +10,9 @@
     </parent>
 
     <artifactId>openfeign-basic</artifactId>
-    <name>3.6.1-OpenFeign 基本</name>
+    <name>3.6.1-OpenFeign 基本使用及配置</name>
     <packaging>jar</packaging>
-    <description>OpenFeign 基本样例</description>
+    <description>OpenFeign 基本使用及常用配置样例</description>
 
     <dependencies>
         <!-- 引入 Spring Boot Actuator Starter -->
