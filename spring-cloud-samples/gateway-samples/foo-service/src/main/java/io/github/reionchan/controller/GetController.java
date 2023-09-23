@@ -45,7 +45,7 @@ public class GetController {
             @ApiResponse(responseCode = "400", ref = RESPONSE_FAIL),
             @ApiResponse(responseCode = "500", ref = RESPONSE_ERROR),
     })
-    public ResponseEntity<WebResponse<?>> pathVar(
+    public ResponseEntity<WebResponse<?>> queryVar(
         @PathVariable
         @Schema(description = "用户ID, 需要为正数")
         @Positive(message = "id 需为正数") Integer id) {
@@ -55,7 +55,7 @@ public class GetController {
     // @formatter:on
 
     /**
-     * 带有路径参数的 Get
+     * 带有 Query 参数的 Get
      */
     // @formatter:off
     @GetMapping("/user")
@@ -69,7 +69,7 @@ public class GetController {
             @ApiResponse(responseCode = "400", ref = RESPONSE_FAIL),
             @ApiResponse(responseCode = "500", ref = RESPONSE_ERROR)
     })
-    public ResponseEntity<WebResponse<?>> pathVar(
+    public ResponseEntity<WebResponse<?>> queryVar(
         @RequestParam @Schema(description = "用户ID, 需要为正数")
         @Positive(message = "id 需为正数") Integer id,
         @RequestParam @Schema(description = "用户名，长度5~30，开头为字母，之后数字、字母、_")

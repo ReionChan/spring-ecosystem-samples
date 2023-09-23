@@ -7,8 +7,10 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 /**
@@ -19,6 +21,8 @@ import org.hibernate.validator.constraints.Length;
  **/
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonPropertyOrder({"id", "userName", "age"})
 @Schema(name = "RequestVo", description = "用户请求 Vo")
 public class RequestVo {

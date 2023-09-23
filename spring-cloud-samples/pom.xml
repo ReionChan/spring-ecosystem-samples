@@ -21,6 +21,7 @@
         <module>loadbalancer-samples</module>
         <module>circuitbreaker-samples</module>
         <module>gateway-samples</module>
+        <module>openfeign-samples</module>
     </modules>
 
     <properties>

@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.http.HttpStatus;
 
@@ -17,7 +16,10 @@ import org.springframework.http.HttpStatus;
  **/
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonPropertyOrder({"timeStamp", "code", "status", "success", "message", "data"})
+@ToString
 @Schema(name = "WebResponse", description = "接口响应对象")
 public class WebResponse<T> {
 
