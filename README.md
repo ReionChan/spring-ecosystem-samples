@@ -27,6 +27,8 @@
    * [gateway-springdoc-nacos](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/gateway-samples/gateway-springdoc-nacos)
      * [commons](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/gateway-samples/commons)
      * [foo-service](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/gateway-samples/foo-service)
+ * [openfeign-samples](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/openfeign-samples)
+   * [openfeign-basic](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/openfeign-samples/openfeign-basic)
 
 ## spring-security-samples 6.0.x
   * [security-out-of-box](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-security-samples/security-out-of-box)
