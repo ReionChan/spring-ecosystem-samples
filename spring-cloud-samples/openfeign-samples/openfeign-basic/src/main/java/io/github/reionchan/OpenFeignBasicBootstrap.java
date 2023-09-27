@@ -6,11 +6,6 @@ import feign.Logger;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
 import io.github.reionchan.client.FooClient;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.cloud.openfeign.*;
-import org.springframework.cloud.openfeign.clientconfig.FeignClientConfigurer;
-import org.springframework.context.annotation.Bean;
-import outside.scan.config.FooClientConfiguration;
 import io.github.reionchan.response.WebResponse;
 import io.github.reionchan.vo.RequestVo;
 import lombok.extern.slf4j.Slf4j;
@@ -18,11 +13,15 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.*;
+import org.springframework.cloud.openfeign.clientconfig.FeignClientConfigurer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
+import outside.scan.config.FooClientConfiguration;
 
 import java.util.Map;
 

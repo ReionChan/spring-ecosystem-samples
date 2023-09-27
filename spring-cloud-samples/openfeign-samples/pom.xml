@@ -16,6 +16,7 @@
 
     <modules>
         <module>openfeign-basic</module>
+        <module>openfeign-circuitbreaker</module>
     </modules>
 
 </project>
