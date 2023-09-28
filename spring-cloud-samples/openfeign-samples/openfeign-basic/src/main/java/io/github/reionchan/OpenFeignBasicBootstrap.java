@@ -43,7 +43,7 @@ import java.util.Map;
  *      在 application.yaml 中配置 Nacos 服务地址
  *  2.2 引入依赖：spring-cloud-starter-loadbalancer
  *      将使得 Feign 客户端具备负载均衡的能力，在之后的示例详细讲解
-*   2.3 引入依赖：spring-cloud-starter-openfeign
+ *  2.3 引入依赖：spring-cloud-starter-openfeign
  *      使项目获得自动装配 Feign 功能
  *
  * ============ 基本使用 ========================
@@ -62,18 +62,20 @@ import java.util.Map;
  *      该注解常用属性方法：
  *          value|name     服务名称，可以加协议前缀，可作为负载均衡的 serviceId
  *          contextId      设置该客户端 bean 名称，不设置时使用 value|name
- *          url            服务端绝对 URL 或可解析的服务域名
+ *          url            服务端绝对 URL 或可解析的主机名
  *          configuration  该客户端定制化 Java 配置类
  *          fallback|fallbackFactory   调用异常时补偿类或工厂类
  *          path        该客户端所有方法的路径映射通用路径前缀
- *          primary     当该客户端接口对应多个 bean 实例时（负载均衡多个 fallback），标识某个为主 bean
- *          qualifiers  当该客户端接口对应多个 bean 实例时（负载均衡多个 fallback），用做主 bean 之外的可选注入别名
+ *          primary     当该客户端接口对应多个 bean 实例时（负载均衡多个 fallback）
+ *                      标识某个为主 bean
+ *          qualifiers  当该客户端接口对应多个 bean 实例时（负载均衡多个 fallback）
+ *                      用做主 bean 之外的可选注入别名
  *
  *  3.3 编写 {@link FooClientConfiguration} 定制化 FooClient
  *      1. Feign 日志配置
  *          1.1 开启请求日志打印
  *              Feign 客户端只在该客户端日志等级设置为 DEBUG 时才会输出请求日志，
- *              针对每个客户端设置日志级别时，在 logging.level 属性后追加类全限定名即可，例如：
+ *              每个客户端设置日志级别时，在 logging.level 属性后追加类全限定名即可，例如：
  *                  logging.level.foo.bar.FooClient=DEBUG
  *          1.2 请求日志打印级别 {@link Logger.Level}
  *              NONE    不输出任何请求日志

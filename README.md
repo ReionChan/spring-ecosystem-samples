@@ -29,6 +29,7 @@
      * [foo-service](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/gateway-samples/foo-service)
  * [openfeign-samples](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/openfeign-samples)
    * [openfeign-basic](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/openfeign-samples/openfeign-basic)
+   * [openfeign-loadbalancer](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/openfeign-samples/openfeign-loadbalancer)
    * [openfeign-circuitbreaker](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/openfeign-samples/openfeign-circuitbreaker)
 
 ## spring-security-samples 6.0.x
