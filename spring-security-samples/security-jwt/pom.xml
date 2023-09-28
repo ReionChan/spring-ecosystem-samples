@@ -16,7 +16,6 @@
     <description>使用 JWT 保存用户认证状态，使服务器成为无状态</description>
 
     <properties>
-        <h2.version>2.1.214</h2.version>
         <java-jwt.version>4.4.0</java-jwt.version>
     </properties>
 

@@ -16,7 +16,7 @@
     <description>使用 Spring Security Oauth2 Authorization Server 构建的支持 OAuth2 协议的服务端</description>
 
     <properties>
-        <h2.version>2.1.214</h2.version>
+
     </properties>
 
     <dependencies>

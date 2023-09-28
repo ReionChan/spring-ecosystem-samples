@@ -16,7 +16,7 @@
     <description>使用 DAO 查询的用户进行认证操作</description>
 
     <properties>
-        <h2.version>2.1.214</h2.version>
+
     </properties>
 
     <dependencies>

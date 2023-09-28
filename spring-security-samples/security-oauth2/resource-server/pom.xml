@@ -16,7 +16,7 @@
     <description>资源服务，它提供一些受保护的资源，必须通过 OAuth 授权服务器授权的客户端或资源所有者本身进行访问。</description>
 
     <properties>
-        <h2.version>2.1.214</h2.version>
+
     </properties>
 
     <dependencies>
