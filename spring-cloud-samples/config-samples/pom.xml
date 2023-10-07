@@ -17,8 +17,8 @@
     <description>Spring Cloud Config 相关演示样例</description>
 
     <modules>
-        <module>config-server-git</module>
         <module>config-server-filesystem</module>
+        <module>config-server-git</module>
         <module>config-client-bootstrap</module>
         <module>config-client-import</module>
     </modules>
