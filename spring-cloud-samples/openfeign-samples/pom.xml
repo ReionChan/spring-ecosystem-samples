@@ -18,6 +18,7 @@
         <module>openfeign-basic</module>
         <module>openfeign-loadbalancer</module>
         <module>openfeign-circuitbreaker</module>
+        <module>openfeign-extensibility</module>
     </modules>
 
 </project>

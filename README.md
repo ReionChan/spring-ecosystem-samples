@@ -31,6 +31,7 @@
    * [openfeign-basic](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/openfeign-samples/openfeign-basic)
    * [openfeign-loadbalancer](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/openfeign-samples/openfeign-loadbalancer)
    * [openfeign-circuitbreaker](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/openfeign-samples/openfeign-circuitbreaker)
+   * [openfeign-extensibility](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/openfeign-samples/openfeign-extensibility)
 
 ## spring-security-samples 6.0.x
   * [security-out-of-box](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-security-samples/security-out-of-box)
