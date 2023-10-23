@@ -22,6 +22,7 @@
         <module>circuitbreaker-samples</module>
         <module>gateway-samples</module>
         <module>openfeign-samples</module>
+        <module>stream-samples</module>
     </modules>
 
     <properties>

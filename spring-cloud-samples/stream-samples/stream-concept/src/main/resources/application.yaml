@@ -1,0 +1,84 @@
+server:
+  # 设置服务器端口
+  port: 8080
+
+spring:
+  application:
+    # 应用名称设置
+    name: stream-concept
+
+  # === RabbitMQ 配置 ===
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+
+  # === Spring Cloud 配置 ===
+  cloud:
+    # --- 函数配置 ---
+    function:
+      # 出现多个函数 Bean 时，需进函数定义
+      # product -> timestamp -> print
+      #
+      # 采用符合函数配置时，可以配置成：
+      #   product,timestamp;print
+      # 把 product 和 timestamp 合并成复合函数，即：
+      #   (product,timestamp) -> print
+      # 配置 spring.cloud.stream.bindings 生产者时，
+      # 绑定名称为：producttimestamp-out-0
+      # 且删除 timestamp-in-0、timestamp-out-0 配置
+      # print-in-0 绑定的 destination 直接连接 producttimestamp-out-0 的输出 destination 即可
+      #
+      definition: product;timestamp;print
+
+    # --- Spring Cloud Stream 配置 ---
+    # BindingServiceProperties 收集属性定义
+    stream:
+      # --- 绑定配置 ---
+      # BindingProperties 收集属性定义
+      #
+      #               output: demo-0
+      # product-out-0 ===============> timestamp-in-0
+      #                                      ||
+      #                                      ||
+      # print-in-0 <================= timestamp-out-0
+      #               input: demo-1
+      #
+      bindings:
+        # 函数 Bean: product 输出通道名称（绑定名称）
+        product-out-0:
+          # 输出通道绑定目标名称（RabbitMQ 中为 Exchanger）
+          destination: demo-0
+          # 生产者配置
+          producer:
+            # 轮询器配置
+            poller:
+              # 每隔 30 秒生产一个消息
+              fixed-delay: PT30S
+
+        # 函数 Bean: streamProduct 输出通道名称（绑定名称）
+        # 使用基于流式的生产者无需配置生产者轮询器
+        streamProduct-out-0:
+          # 输出通道绑定目标名称（RabbitMQ 中为 Exchanger）
+          destination: demo-0
+
+        # 函数 Bean: timestamp 输入通道名称（绑定名称）
+        timestamp-in-0:
+          destination: demo-0
+          group: group-0
+        # 函数 Bean: timestamp 输出通道名称（绑定名称）
+        timestamp-out-0:
+          # 输出通道绑定目标名称（RabbitMQ 中为 Exchanger）
+          destination: demo-1
+
+        # 函数 Bean: print 输入通道名称（绑定名称）
+        print-in-0:
+          # 输入通道绑定目标名称
+          destination: demo-1
+          # 绑定所属的分组名称，相同组名称下的消费者共享订阅
+          group: group-1
+
+
+
