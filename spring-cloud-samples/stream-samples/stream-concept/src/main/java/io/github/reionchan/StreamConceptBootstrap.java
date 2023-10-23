@@ -127,7 +127,7 @@ import java.util.stream.Stream;
  *  3.5 spring-cloud-stream-binder-rabbit-core
  *      定义针对接口 Binder 的提供商实现 RabbitMQ 独有属性配置
  * 4. RabbitMQ 服务器
- *  按照 RabbitMQ  服务器，并配置 application.yaml 文件中以
+ *  安装 RabbitMQ  服务器，并配置 application.yaml 文件中以
  *      spring.rabbitmq.*
  *  为前缀的属性
  *
