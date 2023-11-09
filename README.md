@@ -34,6 +34,9 @@
    * [openfeign-extensibility](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/openfeign-samples/openfeign-extensibility)
  * [stream-samples](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/stream-samples)
    * [stream-concept](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/stream-samples/stream-concept)
+   * [stream-rabbit](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/stream-samples/stream-rabbit)
+     * [rabbit-consumer](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/stream-samples/stream-rabbit/rabbit-consumer)
+     * [rabbit-producer](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/stream-samples/stream-rabbit/rabbit-producer)
 
 ## spring-security-samples 6.0.x
   * [security-out-of-box](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-security-samples/security-out-of-box)
