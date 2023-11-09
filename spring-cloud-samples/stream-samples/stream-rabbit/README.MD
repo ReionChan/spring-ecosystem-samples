@@ -78,11 +78,11 @@
 
    &emsp;&emsp; 就 RabbitMQ  而言，此配置将会创建出名为 `order.create.msg` 的 **Exchange 交换机**，并且将名为 `order.create.msg.createGrp` 的 **Queue 队列** 绑定到该交换机。生产类通过向绑定名为 `groupOut` 的 **Binding 绑定** 发送消息，将被交换机路由到绑定的队列中。默认情况下，交换机为 Topic 类型，绑定到该交换机的队列的 **BindingKey 绑定键** 为 **#**，即通配所有 **RoutingKey 路由键**。
 
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/stream-samples/stream-rabbit/img/exchanges-group.png)
+   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/exchanges-group.png?raw=true)
 
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/stream-samples/stream-rabbit/img/queue-group.png)
+   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/queue-group.png?raw=true)
 
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/stream-samples/stream-rabbit/img/binding-group.png)
+   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/binding-group.png?raw=true)
 
 2. 生产类
 
@@ -205,13 +205,13 @@
 
    此处配置名称为 `partOut` 的绑定，它绑定名称为 `partitioned.msg` 的 **Exchange 交换机**。在生产者属性中设置 2 个分区，分区 SpEL 表达式：`headers['partitionKey'] % 2`，即根据消息头中的 `partitioniKey` 与 2 取模运算的结果当做分区索引。指定消费者需要属于 `partGrp` 分组才能消费分区队列中的消息。
 
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/stream-samples/stream-rabbit/img/exchanges-partition.png)
+   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/exchanges-partition.png?raw=true)
 
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/stream-samples/stream-rabbit/img/queue-partition.png)
+   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/queue-partition.png?raw=true)
 
    &emsp;&emsp; 生成两个分区队列，默认命名规则为：`exchangeName.groupName-index`，即分区交换机名.组名-分区索引。
 
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/stream-samples/stream-rabbit/img/binding-partition.png)
+   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/binding-partition.png?raw=true)
 
    &emsp;&emsp;交换机下绑定两个分区队列，它们的路由键默认规则为：`exchangeName-index`，即分区交换机名.分区索引。
 
@@ -358,25 +358,25 @@
 
    
 
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/stream-samples/stream-rabbit/img/exchanges-route.png)
+   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/exchanges-route.png?raw=true)
 
    &emsp;&emsp;交换器 `routed.msg` 有关联的 处理死信的交换器 `DLX`，而名称为 `functionRouter-in-0` 的交换机是由上游激活的 **RoutingFunction** 的输入参数绑定的交换器，名称为 `gatewayfunctionRouter-out-0` 的交换器则是下游激活的 **RoutingFunction** 与 `gateway` 复合函数的输出绑定的交换器。
 
    
 
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/stream-samples/stream-rabbit/img/queue-route.png)
+   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/queue-route.png?raw=true)
 
    &emsp;&emsp;队列 `routed.msg.downstreamGrp` 是一个具备 DLX（死信交换机）、DLK（死信路由键）特性的队列，而 `routed.msg.downstreamGrp.dlq` 则是与 `routed.msg` 交换机关联的死信交换机 `DLX`  所绑定的队列，`routed.msg.downstreamGrp.parkingLot` 则是自定义处理死信队列的消费者消费完成后最终死信所保存的位置。
 
    
 
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/stream-samples/stream-rabbit/img/binding-route.png)
+   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/binding-route.png?raw=true)
 
    `routed.msg` 交换机的队列绑定关系。
 
    
 
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/stream-samples/stream-rabbit/img/binding-route-dlq.png)
+   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/binding-route-dlq.png?raw=true)
 
    `DLX` 交换机的队列绑定关系，可以看到该交换机被绑定的队列为正常消费队列后缀 **.dlq** 来命名，绑定的路由键即为交换机的全名。
 
@@ -637,7 +637,7 @@
 
    &emsp;&emsp;读取 DLQ 中的死信，打印死信内容后将其转移到 `routed.msg.downstreamGrp.parkingLog` 队列中。
 
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/stream-samples/stream-rabbit/img/dlq-msg.png)
+   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/dlq-msg.png?raw=true)
 
    
 
@@ -699,4 +699,4 @@
 
    设置自定义重试监听器后，每当发生重试时将会打印如下消息：
 
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/stream-samples/stream-rabbit/img/retry-log.png)
+   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/retry-log.png?raw=true)
