@@ -1,0 +1,84 @@
+server:
+  # 设置服务器端口
+  port: 8080
+
+spring:
+  application:
+    # 应用名称设置
+    name: rabbit-producer
+
+  # === RabbitMQ 配置 ===
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+
+  # === Spring Cloud 配置 ===
+  cloud:
+    function:
+      # 表达式返回的函数 Bean 名称必须在本容器中有定义
+      #definition:
+      # 路由表达式设置
+      routing-expression: "headers['routeNum'] % 2 == 0 ? 'even2RouteOut' : 'odd2RouteOut'"
+
+    # --- Spring Cloud Stream 配置 ---
+    stream:
+      # === 函数 ===
+      function:
+        # --- 绑定别名映射 ---
+        # 将函数式 Bean 输出输入通道默认绑定名映射成简单的名称
+        # 例如：foo-in-0: fooIn
+        #      bar-out-0: barOut
+        bindings:
+          # 分区的绑定名称包含 '.'，使用 "[]" 转义
+          "[partitioned.msg]": partOut
+
+      # === 绑定 ===
+      bindings:
+        # 分组输出绑定
+        groupOut:
+          # 绑定目标地址
+          destination: order.create.msg
+          producer:
+            # 支持多个分组，同一消息将会路由到所有分组
+            # 同组的多个消费者共享同组的消息，一条消息只被该消费分组的一个消费者获取
+            # 同一消息路由到不同分组，将被不同分组的消费者用来实现不同功能
+            # 例如：此订单创建分组外，再设置一个 createLogGrp 分组
+            #      除创建订单的消费者消费消息来创建订单外，另一分组获得该消息后只用作记录日志
+            required-groups:
+              - createGrp
+              #- createLogGrp
+
+        # 分区输出绑定
+        partOut:
+          # 不设置，默认与绑定名称一致
+          destination: partitioned.msg
+          # 设置生产者分区属性
+          producer:
+            # 分区数量
+            partition-count: 2
+            # 分区表达式
+            partition-key-expression: headers['partitionKey'] % 2
+            # 所需分区组
+            required-groups: partGrp
+
+        # 路由输出绑定
+        routeOut:
+          destination: routed.msg
+          producer:
+            required-groups: downstreamGrp
+
+      # === RabbitMQ 定制化配置 ===
+      rabbit:
+        bindings:
+          groupOut:
+            # Rabbit 生产者可定制属性，参考：RabbitProducerProperties
+            producer:
+              # 绑定交换机类型，默认 topic
+              exchange-type: topic
+          routeOut:
+            producer:
+              # 自动绑定 DLQ，生产方与消费方需要配置一致
+              auto-bind-dlq: true

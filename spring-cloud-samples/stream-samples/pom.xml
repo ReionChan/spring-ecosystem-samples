@@ -21,6 +21,7 @@
 
     <modules>
         <module>stream-concept</module>
+        <module>stream-rabbit</module>
     </modules>
 
     <dependencyManagement>

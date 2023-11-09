@@ -1,0 +1,91 @@
+server:
+  # 设置服务器端口
+  port: 8081
+
+spring:
+  application:
+    # 应用名称设置
+    name: rabbit-consumer
+
+  # === RabbitMQ 配置 ===
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+
+  # === Spring Cloud 配置 ===
+  cloud:
+    # --- 函数 Bean 定义 ---
+    function:
+      # 函数 Bean 定义
+      # 其中，gateway|functionRouter 为复合函数
+      definition: >
+        consumer1InCreateGrp;consumer2InCreateGrp;
+        oddPartitionConsumer;evenPartitionConsumer;
+        gateway|functionRouter
+
+      # 路由表达式设置
+      routing-expression: headers['routeKey']
+
+    # --- Spring Cloud Stream 配置 ---
+    stream:
+      # --- 函数配置 ---
+      function:
+        # --- 绑定别名映射 ---
+        bindings:
+          # 订单创建消费者函数映射别名
+          consumer1InCreateGrp-in-0: orderCreate1In
+          consumer2InCreateGrp-in-0: orderCreate2In
+          # 分区消费者函数映射别名
+          evenPartitionConsumer-in-0: evenPart1In
+          oddPartitionConsumer-in-0: oddPart1In
+          # 将复合函数的输入绑定映射别名
+          gatewayfunctionRouter-in-0: routeIn
+
+      # --- 绑定配置 ---
+      bindings:
+        # --- 相同分组的两个消费者 ---
+        # 它们共享 createGrp 分组内的消息，默认是轮询方式轮流交替获得消息
+        orderCreate1In:
+          destination: order.create.msg
+          group: createGrp
+        orderCreate2In:
+          destination: order.create.msg
+          group: createGrp
+
+        # --- 分区形式的消费者 ---
+        evenPart1In:
+          destination: partitioned.msg
+          group: partGrp
+          consumer:
+            # 启用分区
+            partitioned: true
+            # 分区实例索引
+            instance-index: 0
+        oddPart1In:
+          destination: partitioned.msg
+          group: partGrp
+          consumer:
+            partitioned: true
+            instance-index: 1
+
+        # --- 下游路由输入绑定 ---
+        routeIn:
+          # 绑定上游路由的输出地址
+          destination: routed.msg
+          group: downstreamGrp
+          # 自定义异常处理（与 DLX/DLQ 机制互斥）
+          #error-handler-definition: errorMessageConsumer
+          consumer:
+            retry-template-name: myRetryTemplate
+
+      # === RabbitMQ 定制化配置 ===
+      rabbit:
+        bindings:
+          routeIn:
+            # Rabbit 消费者可定制属性，参考：RabbitConsumerProperties
+            consumer:
+              # 自动绑定 DLQ，生产方与消费方需要配置一致
+              auto-bind-dlq: true
