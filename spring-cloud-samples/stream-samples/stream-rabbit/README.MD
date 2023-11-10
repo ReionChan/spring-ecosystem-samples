@@ -203,7 +203,7 @@
                required-groups: partGrp
    ```
 
-   此处配置名称为 `partOut` 的绑定，它绑定名称为 `partitioned.msg` 的 **Exchange 交换机**。在生产者属性中设置 2 个分区，分区 SpEL 表达式：`headers['partitionKey'] % 2`，即根据消息头中的 `partitioniKey` 与 2 取模运算的结果当做分区索引。指定消费者需要属于 `partGrp` 分组才能消费分区队列中的消息。
+   &emsp;&emsp;此处配置名称为 `partOut` 的绑定，它绑定名称为 `partitioned.msg` 的 **Exchange 交换机**。在生产者属性中设置 2 个分区，分区 SpEL 表达式：`headers['partitionKey'] % 2`，即根据消息头中的 `partitioniKey` 与 2 取模运算的结果当做分区索引。指定消费者需要属于 `partGrp` 分组才能消费分区队列中的消息。
 
    ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/exchanges-partition.png?raw=true)
 

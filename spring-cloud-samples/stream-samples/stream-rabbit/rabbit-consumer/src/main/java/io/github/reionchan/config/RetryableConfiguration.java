@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.annotation.StreamRetryTemplate;
 import org.springframework.cloud.stream.binder.AbstractBinder;
 import org.springframework.cloud.stream.binder.ConsumerProperties;
-import org.springframework.cloud.stream.config.BindingServiceProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.MessageHandlingException;
 import org.springframework.retry.RetryCallback;
