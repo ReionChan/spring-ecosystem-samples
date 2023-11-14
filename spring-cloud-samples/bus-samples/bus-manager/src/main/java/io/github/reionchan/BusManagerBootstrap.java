@@ -94,7 +94,7 @@ import java.util.function.Consumer;
  *    重新绑定原理参考样例模块：3.1.1-Cloud Application Context
  *
  *    2.1 启用所有 bus-node 应用服务的总线追踪功能，使监听 {@link SentApplicationEvent} 事件的自定义监听器生效：
- *      curl -X POST http://localhost:8080/actuator/busenv/bus-node \                                                                                                                    127 ↵ ──(Mon,Nov13)─┘
+ *      curl -X POST http://localhost:8080/actuator/busenv/bus-node \
  *          -H 'Content-Type: application/json' \
  *          -d '{"name":"spring.cloud.bus.trace.enabled", "value":true}'
  *    2.2 启用端口为 8081 的所有 bus-node 应用服务的订单创建功能，默认创建功能关闭：
