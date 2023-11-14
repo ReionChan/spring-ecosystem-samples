@@ -23,6 +23,7 @@
         <module>gateway-samples</module>
         <module>openfeign-samples</module>
         <module>stream-samples</module>
+        <module>bus-samples</module>
     </modules>
 
     <properties>

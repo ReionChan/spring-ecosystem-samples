@@ -1,11 +1,7 @@
 package io.github.reionchan.listener;
 
-import io.github.reionchan.bean.RefreshScopeAnnotationBean;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.aop.support.AopUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.environment.EnvironmentChangeEvent;
-import org.springframework.cloud.util.ProxyUtils;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 

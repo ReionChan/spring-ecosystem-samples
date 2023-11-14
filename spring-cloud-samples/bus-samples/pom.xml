@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.reionchan</groupId>
+        <artifactId>spring-cloud-samples</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>bus-samples</artifactId>
+    <name>3.8-Spring Cloud Bus 相关样例</name>
+    <packaging>pom</packaging>
+    <description>Spring Cloud Bus 相关样例</description>
+
+    <properties>
+        <!-- Spring Cloud Bus 版本，与 Spring Cloud Dependencies 保持一致 -->
+        <spring-cloud-bus.version>4.0.1</spring-cloud-bus.version>
+        <!-- Spring Cloud Function 版本，与 Spring Cloud Dependencies 保持一致 -->
+        <spring-cloud-function.version>4.0.3</spring-cloud-function.version>
+    </properties>
+
+    <modules>
+        <module>bus-manager</module>
+        <module>bus-node</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-bus-dependencies</artifactId>
+                <version>${spring-cloud-bus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-function-dependencies</artifactId>
+                <version>${spring-cloud-function.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>

@@ -129,8 +129,8 @@ import java.util.Set;
  *      {@link RefreshScopeAnnotationBean} 示例就是被 @RefreshScope 注解的 Bean, 它依赖的环境属性配置 {@link EnvProperties}
  *      是通过构造方法进行注入的，如果要实现动态刷新，只能通过构造方法重新绑定新的 {@link EnvProperties}，但是重新执行构造方法生成的
  *      {@link RefreshScopeAnnotationBean} 实例，不能重新赋值给之前就依赖它的 {@link RefreshScopeRefreshedListener}。
- *      为了解决此问题，给该类加上 @RefreshScope 注解后，{@link RefreshScopeRefreshedListener} 将依赖的是一直不变的 AOP 代理对象，
- *      新构造生成的对象只用来覆盖此代理对象的 target 对象。
+ *      为了解决此问题，给该类加上 @RefreshScope 注解后，{@link RefreshScopeRefreshedListener} 将依赖的是 {@link RefreshScopeAnnotationBean}
+ *      类型的 AOP 代理对象，新构造生成的对象只用来覆盖此代理对象的 target 对象。
  *
  *      值得注意：
  *          1. @RefreshScope 的 AOP 代理是懒加载 (非 singleton or prototype，而是 refresh) 形式，只有在该代理被使用时才会重新执行初始化

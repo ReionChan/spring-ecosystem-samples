@@ -5,25 +5,24 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.github.reionchan</groupId>
-        <artifactId>stream-samples</artifactId>
+        <artifactId>bus-samples</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>stream-rabbit</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <name>3.7.2-Stream 整合 RabbitMQ 样例</name>
-    <packaging>pom</packaging>
+    <artifactId>bus-manager</artifactId>
+    <name>3.8.1-Spring Cloud Bus 管理节点</name>
+    <packaging>jar</packaging>
+    <description>Spring Cloud Bus 管理节点，用来管理其他节点</description>
 
-    <modules>
-        <module>rabbit-consumer</module>
-        <module>rabbit-producer</module>
-    </modules>
+    <properties>
+
+    </properties>
 
     <dependencies>
-        <!-- 引入基于 Rabbit 消息中间件的 Spring Cloud Stream -->
+        <!-- 引入基于 AMQP 协议的 Rabbit 消息中间件的  Spring Cloud Bus -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
+            <artifactId>spring-cloud-starter-bus-amqp</artifactId>
         </dependency>
 
         <!-- 引入 Spring Boot Actuator Starter -->
@@ -36,6 +35,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- 引入 Spring Cloud Function Web -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-function-web</artifactId>
         </dependency>
     </dependencies>
 

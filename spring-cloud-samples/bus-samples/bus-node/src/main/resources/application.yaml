@@ -1,0 +1,21 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: bus-node
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+
+  cloud:
+    bus:
+      # 启用 Spring Cloud Bus，默认 true 启用
+      enabled: true
+      # 启用总线消息追踪，默认 false 关闭
+      trace:
+        enabled: false
