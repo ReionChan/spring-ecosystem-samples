@@ -1,5 +1,6 @@
 package io.github.reionchan.event;
 
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.cloud.bus.event.Destination;
 import org.springframework.cloud.bus.event.RemoteApplicationEvent;
@@ -28,6 +29,7 @@ public class NotificationRemoteApplicationEvent extends RemoteApplicationEvent {
     }
 
     @Data
+    @Builder
     public static class Notification implements Serializable {
         private String id;
         private Long timestamp;

@@ -78,9 +78,6 @@ public class BusManagerTest {
     @MockBean
     private BusConsumer busConsumer;
 
-    @Autowired
-    private ConfigurableApplicationContext context;
-
     @Test
     @DisplayName("Bus Refresh")
     @Order(1)
@@ -99,7 +96,7 @@ public class BusManagerTest {
     @DisplayName("Bus Change Environment")
     @Order(2)
     public void testBusEnvChange() throws Exception {
-        // 调用刷新总线方法
+        // 调用改变环境总线方法
         mockMvc.perform(MockMvcRequestBuilders.post("/actuator/busenv")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"name\":\"spring.cloud.bus.trace.enabled\", \"value\":true}"))
@@ -118,18 +115,16 @@ public class BusManagerTest {
     @DisplayName("Bus Custom Event")
     @Order(3)
     public void testBusCustomEvent() throws Exception {
-        // 调用刷新总线方法
+        // 调用发送自定义总线事件方法
         mockMvc.perform(MockMvcRequestBuilders.post("/pushNotification")
                         .contentType(MediaType.TEXT_PLAIN_VALUE)
                         .content("Testing Message"))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(status().is(200));
 
-        // 验证总线消费者接收到 NotificationRemoteApplicationEvent 总线刷新事件，并被调用一次，且自定义事件通知内容为 "Testing Message"
+        // 验证总线消费者接收到 NotificationRemoteApplicationEvent 总线事件，并被调用一次，且自定义事件通知内容为 "Testing Message"
         verify(busConsumer, times(1)).accept(argThat(e ->
                 ((NotificationRemoteApplicationEvent)e).getNotification().getMessage().equals("Testing Message"))
         );
     }
 }
-
-
