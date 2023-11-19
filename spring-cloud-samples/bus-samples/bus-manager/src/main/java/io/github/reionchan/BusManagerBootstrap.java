@@ -140,7 +140,7 @@ public class BusManagerBootstrap {
      *  curl -H "Content-Type: text/plain"  http://localhost:8080/pushNotification -d "This is a message!"
      */
     @Bean
-    public Consumer<String> pushNotification(ApplicationContext ctx, BusProperties busProperties) {
+    public Consumer<String> pushNotification(ApplicationContext ctx) {
         return msg -> {
             // 发布自定义总线事件给所有节点
             NotificationRemoteApplicationEvent.Notification noti = new NotificationRemoteApplicationEvent.Notification();
@@ -148,6 +148,7 @@ public class BusManagerBootstrap {
             noti.setTimestamp(System.currentTimeMillis());
             noti.setMessage(msg);
             Destination.Factory destinationFac = ctx.getBean(Destination.Factory.class);
+            BusProperties busProperties = ctx.getBean(BusProperties.class);
             ctx.publishEvent(new NotificationRemoteApplicationEvent(ctx, busProperties.getId(), destinationFac.getDestination(null), noti));
         };
     }
