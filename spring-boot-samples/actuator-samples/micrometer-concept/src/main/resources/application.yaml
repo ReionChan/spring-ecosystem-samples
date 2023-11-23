@@ -1,0 +1,13 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: micrometer-concept
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # 暴露监控指标
+        include: metrics

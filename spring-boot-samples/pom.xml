@@ -14,9 +14,9 @@
     <name>2-Spring Boot 3.0.x 相关样例</name>
     <packaging>pom</packaging>
 
-    <properties>
-
-    </properties>
+    <modules>
+        <module>actuator-samples</module>
+    </modules>
 
     <dependencies>
         <!-- lombok 开发工具类 -->
