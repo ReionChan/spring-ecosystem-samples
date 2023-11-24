@@ -10,6 +10,24 @@ version: "3.3"
 
 # 服务列表
 services:
+  # OpenTelemetry Collector 服务 v.0.89.0
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib
+    container_name: otel-collector
+    restart: always
+    ports:
+      - 1888:1888 # pprof extension
+      - 8888:8888 # Prometheus metrics exposed by the Collector
+      - 8889:8889 # Prometheus exporter metrics
+      - 13133:13133 # health_check extension
+      - 4317:4317 # OTLP gRPC receiver
+      - 4318:4318 # OTLP http receiver
+      - 55679:55679 # zpages extension
+    volumes:
+      - ./docker/opentelemetry-collector/otel-collector-config.yaml:/etc/otelcol-contrib/otel-collector-config.yaml
+    command:
+      - "--config=/etc/otelcol-contrib/otel-collector-config.yaml"
+
   # Prometheus 服务 v.2.48.0
   prometheus:
     image: bitnami/prometheus
@@ -21,6 +39,8 @@ services:
       - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
+    depends_on:
+      - otel-collector
 
   # Grafana 服务 v.10.2.2
   grafana:

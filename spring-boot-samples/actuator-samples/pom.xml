@@ -16,7 +16,8 @@
 
     <modules>
         <module>micrometer-concept</module>
-        <module>micrometer-prometheus-grafana</module>
+        <module>micrometer-prometheus</module>
+        <module>micrometer-opentelemetry</module>
     </modules>
 
 </project>

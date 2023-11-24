@@ -1,0 +1,32 @@
+receivers:
+  otlp:
+    protocols:
+      # 采用 http 协议在端口 4318 监听推送来的指标数据
+      http:
+
+processors:
+  batch:
+
+# 导出器配置
+exporters:
+  # Prometheus 导出器配置
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+    # 给指标数据添加标签，标记数据来源 otel-collector
+    const_labels:
+      source: otel-col
+
+extensions:
+  health_check:
+  pprof:
+  zpages:
+
+service:
+  extensions: [health_check, pprof, zpages]
+  pipelines:
+    # 指标数据设置
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      # 导出到 prometheus
+      exporters: [prometheus]
