@@ -1,0 +1,37 @@
+#
+# 本配置适用于 Docker Desktop for Mac v.2.1.0.5
+#   Engine: v.19.03.5
+#   Compose: v.1.24.1
+# 更高版本请注意版本配置区别，本版本支持：
+#   host.docker.internal
+#   参考：https://medium.com/@TimvanBaarsen/how-to-connect-to-the-docker-host-from-inside-a-docker-container-112b4c71bc66
+#
+version: "3.3"
+
+# 服务列表
+services:
+  # Prometheus 服务 v.2.48.0
+  prometheus:
+    image: bitnami/prometheus
+    container_name: prometheus
+    restart: always
+    ports:
+      - 9090:9090
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+
+  # Grafana 服务 v.10.2.2
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: always
+    ports:
+      - 3000:3000
+    # 指定配置目录
+    volumes:
+      - ./docker/grafana/provisioning/:/etc/grafana/provisioning/
+    # 配置依赖关系
+    depends_on:
+      - prometheus

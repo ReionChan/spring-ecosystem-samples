@@ -16,6 +16,7 @@
 
     <modules>
         <module>micrometer-concept</module>
+        <module>micrometer-prometheus-grafana</module>
     </modules>
 
 </project>
