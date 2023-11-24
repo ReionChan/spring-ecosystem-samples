@@ -9,10 +9,10 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>micrometer-prometheus-grafana</artifactId>
+    <artifactId>micrometer-prometheus</artifactId>
     <name>2.1.2-Micrometer Prometheus Grafana 整合</name>
     <packaging>jar</packaging>
-    <description>Prometheus 拉取指标数据，Grafana 图标展示</description>
+    <description>Prometheus 拉取指标数据，Grafana 图表展示</description>
 
     <dependencies>
         <!-- Spring Boot Actuator Starter 依赖 -->

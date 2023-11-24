@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: micrometer-prometheus-grafana
+    name: micrometer-prometheus
 
 management:
   endpoints:
@@ -17,7 +17,7 @@ management:
         #  - job_name: "micrometer-prometheus"
         #    metrics_path: "/actuator/prometheus"
         #    static_configs:
-        #      - targets: ["localhost:8080"]
+        #      - targets: ["APP_HOST:8080"]
         # ---------------------------------------------
         include: health,metrics,prometheus
 
@@ -35,7 +35,7 @@ management:
         # scrape_configs:
         #  - job_name: "micrometer-prometheus"
         #    static_configs:
-        #      - targets: ["localhost:9090"]
+        #      - targets: ["PUSHGATEWAY_HOST:9091"]
         # -----------------------------------------------
         pushgateway:
           # pushgateway 地址

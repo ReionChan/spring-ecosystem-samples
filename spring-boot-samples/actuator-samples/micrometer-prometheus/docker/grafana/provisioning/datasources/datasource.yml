@@ -1,0 +1,14 @@
+# 数据源配置
+datasources:
+  # Prometheus 数据源配置
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    # 指定 Prometheus 服务器地址，此处采取 Docker 内访问的方式
+    url: http://prometheus:9090
+    jsonData:
+      httpMethod: POST
+      manageAlerts: true
+      prometheusType: Prometheus
+      prometheusVersion: 2.48.0
+      cacheLevel: 'High'

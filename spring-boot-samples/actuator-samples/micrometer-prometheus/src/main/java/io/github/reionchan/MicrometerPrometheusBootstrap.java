@@ -49,7 +49,7 @@ import java.util.function.Consumer;
  * 1. 启动本项目
  * 2. 启动 Docker 容器中的 Prometheus 和 Grafana 服务
  *  2.1 当前工作目录：
- *      ./actuator-samples/micrometer-prometheus-grafana
+ *      ./actuator-samples/micrometer-prometheus
  *  2.2 在工作目录执行如下命令：
  *      启动：
  *          docker-compose -f ./docker-compose.yaml up -d
