@@ -1,0 +1,53 @@
+receivers:
+  otlp:
+    protocols:
+      # 采用 http 协议在端口 4318 监听推送来的指标数据
+      http:
+
+processors:
+  batch:
+
+# 导出器配置
+exporters:
+  # Zipkin 导出器配置
+  # 参考：https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/zipkinexporter
+  zipkin:
+    endpoint: "http://zipkin:9411/api/v2/spans"
+    format: proto
+
+  # Jaeger 导出器配置
+  # Jaeger 不在最新的导出器列表，此处更改成 Jaeger 支持的 otlp 形式导出
+  # 参考：https://github.com/open-telemetry/opentelemetry-helm-charts/blob/0def0da3d8beb5e95840e62c614fd616694c287e/charts/opentelemetry-demo/values.yaml#L627
+  # 支持清单参考：https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter
+  otlp:
+    endpoint: "http://jaeger:4317"
+    tls:
+      insecure: true
+
+  # Prometheus 导出器配置
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+    # 给指标数据添加标签，标记数据来源 otel-collector
+    const_labels:
+      source: otel-col
+
+extensions:
+  health_check:
+  pprof:
+  zpages:
+
+service:
+  extensions: [health_check, pprof, zpages]
+  pipelines:
+    # 指标数据设置
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      # 导出到 prometheus
+      exporters: [prometheus]
+    # 追踪数据设置
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      # 导出到 zipkin jaeger
+      exporters: [zipkin, otlp]

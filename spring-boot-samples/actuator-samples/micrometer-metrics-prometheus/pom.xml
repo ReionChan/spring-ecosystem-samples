@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.reionchan</groupId>
+        <artifactId>actuator-samples</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>micrometer-metrics-prometheus</artifactId>
+    <name>2.1.2-Micrometer Metrics Prometheus Grafana 整合</name>
+    <packaging>jar</packaging>
+    <description>Prometheus 拉取指标数据，Grafana 图表展示</description>
+
+    <dependencies>
+        <!-- Spring Boot Actuator Starter 依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Web Starter 依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Micrometer 对 Prometheus 支持的依赖，它将标准指标转换成 Prometheus 格式 -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+
+        <!-- Prometheus 推送网关客户端（通过它向 Prometheus 推送指标数据，默认 Prometheus 为拉取方式） -->
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_pushgateway</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

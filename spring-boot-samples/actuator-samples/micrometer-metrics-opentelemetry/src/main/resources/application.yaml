@@ -1,0 +1,21 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: micrometer-metrics-opentelemetry
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics
+
+  # === OpenTelemetry Collector 遥测数据收集器配置 ===
+  otlp:
+    metrics:
+      export:
+        enabled: true
+        step: 15s
+        # 默认 OTLP 服务器地址
+        url: http://localhost:4318/v1/metrics

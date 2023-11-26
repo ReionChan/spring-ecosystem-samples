@@ -1,9 +1,14 @@
 # spring-ecosystem-samples
 
-## spring-framework-samples 6.0.x
+## spring-framework-samples 6.x
 
-## spring-boot-samples 3.0.x
-
+## spring-boot-samples 3.x
+* [actuator-samples](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-boot-samples/actuator-samples)
+  * [micrometer-concept](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-boot-samples/actuator-samples/micrometer-concept)
+  * [micrometer-metrics-prometheus-grafana](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-boot-samples/actuator-samples/micrometer-metrics-prometheus)
+  * [micrometer-metrics-opentelemetry-prometheus-grafana](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-boot-samples/actuator-samples/micrometer-metrics-opentelemetry)
+  * [micrometer-traces-opentelemetry-(zipkin jaeger)-prometheus-grafana](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-boot-samples/actuator-samples/micrometer-traces-opentelemetry)
+  
 ## spring-cloud-samples 2022.0.x
 * [commons-samples](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/commons-samples)
    * [cloud-context](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/commons-samples/cloud-context)
@@ -40,7 +45,6 @@
 * [bus-samples](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/bus-samples)
   * [bus-manager](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/bus-samples/bus-manager)
   * [bus-node](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/bus-samples/bus-node)
-
 
 ## spring-security-samples 6.0.x
   * [security-out-of-box](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-security-samples/security-out-of-box)

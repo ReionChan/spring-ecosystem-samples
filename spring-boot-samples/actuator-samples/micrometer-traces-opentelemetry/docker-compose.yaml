@@ -1,0 +1,78 @@
+#
+# 本配置适用于 Docker Desktop for Mac v.2.1.0.5
+#   Engine: v.19.03.5
+#   Compose: v.1.24.1
+# 更高版本请注意版本配置区别，本版本支持：
+#   host.docker.internal
+#   参考：https://medium.com/@TimvanBaarsen/how-to-connect-to-the-docker-host-from-inside-a-docker-container-112b4c71bc66
+#
+version: "3.3"
+
+# 服务列表
+services:
+  # Zipkin 服务
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    restart: always
+    ports:
+      - 9411:9411
+
+  # Jaeger 服务
+  jaeger:
+    image: jaegertracing/all-in-one
+    container_name: jaeger
+    restart: always
+    ports:
+      - 4318 # OpenTelemetry Protocol (OTLP) over HTTP
+      - 4317 # OpenTelemetry Protocol (OTLP) over gRPC
+      - 16686:16686 # UI
+
+  # OpenTelemetry Collector 服务 v.0.89.0
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib
+    container_name: otel-collector
+    restart: always
+    ports:
+      - 1888:1888 # pprof extension
+      - 8888:8888 # Prometheus metrics exposed by the Collector
+      - 8889:8889 # Prometheus exporter metrics
+      - 13133:13133 # health_check extension
+      - 4317:4317 # OTLP gRPC receiver
+      - 4318:4318 # OTLP http receiver
+      - 55679:55679 # zpages extension
+    volumes:
+      - ./docker/opentelemetry-collector/otel-collector-config.yaml:/etc/otelcol-contrib/otel-collector-config.yaml
+    command:
+      - "--config=/etc/otelcol-contrib/otel-collector-config.yaml"
+    depends_on:
+      - zipkin
+      - jaeger
+
+  # Prometheus 服务 v.2.48.0
+  prometheus:
+    image: bitnami/prometheus
+    container_name: prometheus
+    restart: always
+    ports:
+      - 9090:9090
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    depends_on:
+      - otel-collector
+
+  # Grafana 服务 v.10.2.2
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: always
+    ports:
+      - 3000:3000
+    # 指定配置目录
+    volumes:
+      - ./docker/grafana/provisioning/:/etc/grafana/provisioning/
+    # 配置依赖关系
+    depends_on:
+      - prometheus

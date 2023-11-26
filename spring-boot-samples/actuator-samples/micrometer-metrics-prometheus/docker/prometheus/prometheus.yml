@@ -1,0 +1,26 @@
+# my global config
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+# Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+scrape_configs:
+  # 设置抓起本 SpringBoot 应用服务的 Job 名称，此处采用 spring.application.name 配置的值
+  - job_name: "micrometer-metrics-prometheus"
+    # metrics_path 默认为 /metrics，此处修改为 SpringBoot 应用的 /actuator/prometheus 端点
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      # 采用内置 host.docker.internal 域名解析访问主机的 SpringBoot 应用 Web 服务
+      - targets: ["host.docker.internal:8080"]

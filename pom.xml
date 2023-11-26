@@ -22,11 +22,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <!-- Spring Framework 主版本号 -->
-        <spring-framework.version>6.0.7</spring-framework.version>
-
-        <!-- Spring Boot 主版本号 -->
-        <spring-boot.version>3.0.5</spring-boot.version>
+        <!-- Spring Boot 主版本号
+            Spring Cloud 最低兼容版本参考：CompatibilityVerifierProperties
+        -->
+        <spring-boot.version>3.1.6</spring-boot.version>
 
         <!-- Spring Cloud 主版本号 -->
         <spring-cloud.version>2022.0.3</spring-cloud.version>
@@ -73,14 +72,10 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-framework-bom</artifactId>
-                <version>${spring-framework.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <!-- Spring Boot 依赖及版本管理 -->
+            <!--
+                Spring Framework 由此依赖管理，
+                Spring Boot 依赖及版本管理
+            -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
