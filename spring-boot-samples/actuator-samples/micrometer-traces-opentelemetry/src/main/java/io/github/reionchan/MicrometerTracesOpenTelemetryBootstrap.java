@@ -106,8 +106,9 @@ import java.util.Random;
  *      设置 Prometheus 监控指标数据抓取的目标服务器地址为 otel-collector:8889
  * 2. 本机项目变更
  *  2.1 编辑 application.yaml，启用 OTLP 导出设置
- *      以 management.otlp.metrics.export 开头的属性配置添加 tracing，配置采样率及导出地址
- *      暴露 Web 端点 health,metrics
+ *      - 以 management.otlp.metrics.export 开头的属性配置添加 tracing，配置采样率及导出地址
+ *      - 暴露 Web 端点 health,metrics
+ *      - 配置 logging.pattern.level 日志等级格式中追加显示 MDC 中的 traceId/spanId 信息
  *  2.2 新增自定义追踪处理器 {@link DemoTracingObservationHandler} 注意其排序 @Order
  *      它支持在新开启 Scope 时，在原由的 Span 里启用嵌套子 Span，模拟一个跨边界的调用
  *

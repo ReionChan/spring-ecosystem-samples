@@ -5,6 +5,7 @@ spring:
   application:
     name: micrometer-traces-opentelemetry
 
+
 management:
   endpoints:
     web:
@@ -24,3 +25,7 @@ management:
       # 默认 OTLP 服务器地址
       endpoint: http://localhost:4318/v1/traces
 
+# 日志控制台输出追踪日志
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
