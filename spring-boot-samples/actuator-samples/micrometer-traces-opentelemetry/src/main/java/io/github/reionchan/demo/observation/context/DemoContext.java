@@ -25,6 +25,7 @@ public class DemoContext extends Observation.Context {
     
     public DemoContext(Method method) {
         this.method = method;
+        this.put(TracingObservationHandler.TracingContext.class, new TracingObservationHandler.TracingContext());
     }
 
 }

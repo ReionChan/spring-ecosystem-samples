@@ -50,6 +50,7 @@ public class DemoTarget {
         log.info("do something in methodA");
         try {
             Thread.sleep(200);
+            observation.getContext().put("scope", findMethod(DemoTarget.class, "methodB"));
             // 嵌套观察
             observation.scoped(() -> methodB());
         } catch (Exception e) {
