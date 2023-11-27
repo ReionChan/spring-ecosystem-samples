@@ -1,4 +1,4 @@
-package io.github.reionchan.demo.observation;
+package io.github.reionchan.demo.observation.context;
 
 import io.micrometer.observation.Observation;
 import lombok.Data;

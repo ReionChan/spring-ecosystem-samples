@@ -1,5 +1,7 @@
-package io.github.reionchan.demo.observation;
+package io.github.reionchan.demo.observation.convention;
 
+import io.github.reionchan.demo.observation.DemoObservationDocument;
+import io.github.reionchan.demo.observation.context.DemoContext;
 import io.micrometer.common.KeyValues;
 
 import static io.micrometer.common.util.StringUtils.isNotBlank;

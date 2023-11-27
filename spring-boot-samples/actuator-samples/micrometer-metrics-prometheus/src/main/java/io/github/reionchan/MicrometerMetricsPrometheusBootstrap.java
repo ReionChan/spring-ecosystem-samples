@@ -67,8 +67,6 @@ import java.util.function.Consumer;
  *      - 默认用户名密码：admin admin
  *      - 已经在下面的配置文件中设置了 Prometheus 数据源
  *          ./docker/grafana/provisioning/datasources/datasource.yml
- *
- *      通过设置查询表达式，将 demo.methodA、demo.methodB 调用情况展示在仪表盘上。
  * </pre>
  *
  * @author Reion

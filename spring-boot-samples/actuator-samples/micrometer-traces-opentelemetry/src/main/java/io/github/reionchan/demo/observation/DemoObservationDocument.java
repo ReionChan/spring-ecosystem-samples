@@ -1,6 +1,7 @@
 package io.github.reionchan.demo.observation;
 
 import io.github.reionchan.demo.observation.context.DemoContext;
+import io.github.reionchan.demo.observation.convention.DefaultDemoObservationConvention;
 import io.micrometer.common.docs.KeyName;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationConvention;
@@ -25,7 +26,7 @@ public enum DemoObservationDocument implements ObservationDocumentation {
 
         @Override
         public KeyName[] getLowCardinalityKeyNames() {
-            return DemoObservationDocument.DemoLowCardinalityKeyNames.values();
+            return DemoLowCardinalityKeyNames.values();
         }
 
         /**
@@ -45,10 +46,10 @@ public enum DemoObservationDocument implements ObservationDocumentation {
         }
     };
 
-    private DemoObservationDocument() {
+    DemoObservationDocument() {
     }
 
-    static enum DemoLowCardinalityKeyNames implements KeyName {
+    public enum DemoLowCardinalityKeyNames implements KeyName {
 
         /**
          * 调用方法名称
@@ -75,7 +76,7 @@ public enum DemoObservationDocument implements ObservationDocumentation {
             }
         };
 
-        private DemoLowCardinalityKeyNames() {
+        DemoLowCardinalityKeyNames() {
         }
     }
 }

@@ -1,6 +1,7 @@
 package io.github.reionchan;
 
 import io.github.reionchan.demo.DemoTarget;
+
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
@@ -17,7 +18,9 @@ import org.springframework.boot.actuate.autoconfigure.metrics.*;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleProperties;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimplePropertiesConfigAdapter;
-import org.springframework.boot.actuate.autoconfigure.observation.*;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationRegistryCustomizer;
 import org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration;
 import org.springframework.boot.actuate.metrics.MetricsEndpoint;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -57,7 +60,7 @@ import java.util.Random;
  * 1. {@link MetricsAutoConfiguration}
  *  1.1 引入 {@link MetricsProperties} 指标属性配置
  *      以 management.metrics 为前缀的属性配置
- *  1.2 {@link MeterRegistryPostProcessor}
+ *  1.2 {@code MeterRegistryPostProcessor}
  *      - 负责将 {@link MeterRegistryCustomizer} 定制化应用到 {@link MeterRegistry} 上
  *      - 负责将 {@link MeterFilter} 过滤器注册到 {@link MeterRegistry} 上
  *      - 负责将容器中所有激活的预定义的 Metrics 注册到 {@link MeterRegistry}
@@ -86,8 +89,8 @@ import java.util.Random;
  * 6. {@link ObservationAutoConfiguration}
  *  6.1 引入 {@link ObservationProperties} 观察者属性配置
  *      以 management.observations 为前缀的属性配置
- *  6.2 {@link ObservationRegistryPostProcessor}
- *      - 实例化 {@link ObservationRegistryConfigurer}
+ *  6.2 {@code ObservationRegistryPostProcessor}
+ *      - 实例化 {@code ObservationRegistryConfigurer}
  *      - 将 {@link ObservationPredicate} 注册到 {@link ObservationRegistry.ObservationConfig}
  *      - 将 {@link GlobalObservationConvention} 注册到 {@link ObservationRegistry.ObservationConfig}
  *      - 将 {@link ObservationHandler} 注册到 {@link ObservationRegistry.ObservationConfig}
@@ -95,12 +98,12 @@ import java.util.Random;
  *      - 将 {@link ObservationRegistryCustomizer} 定制化应用到 {@link ObservationRegistry}
  *  6.3 {@link ObservationRegistry}
  *      向容器注册一个 {@link ObservationRegistry} Bean
- *  6.4 {@link ObservationHandlerGrouping}
+ *  6.4 {@code ObservationHandlerGrouping}
  *      向容器注册具备对观测处理器按照指标、追踪类型进行分组的工具类
- *  6.5 {@link ObservationAutoConfiguration.MeterObservationHandlerConfiguration}
+ *  6.5 {@code ObservationAutoConfiguration.MeterObservationHandlerConfiguration}
  *      根据类路径是否存在追踪 API，决定初始化默认的观察处理器 {@link MeterObservationHandler} 实现类
  *      不支持追踪时，初始化 {@link DefaultMeterObservationHandler} 实现类
- *      支持追踪时，初始化 {@linkplain TracingAwareMeterObservationHandler} 实现类
+ *      支持追踪时，初始化 {@code TracingAwareMeterObservationHandler} 实现类
  *      追踪 API 包含在 micrometer-tracing 库中，默认没有被引入
  *
  * === Micrometer 运作机制 ===
@@ -112,8 +115,8 @@ import java.util.Random;
  * 例如：
  *  当 {@link Observation} 执行 start 动作时，会通知指标观测处理器 {@link MeterObservationHandler} 生成
  *  {@link Meter} 指标子类实现，并注册到 {@link MeterRegistry} 中，达到对程序可观测性。
- *  同理，如果是追踪观测处理器 {@linkplain TracingAwareMeterObservationHandler}，还会由 {@linkplain Tracer}
- *  生成 {@linkplain Span} 追踪数据。
+ *  同理，如果是追踪观测处理器 {@code TracingAwareMeterObservationHandler}，还会由 {@code Tracer}
+ *  生成 {@code Span} 追踪数据。
  *
  * 针对不同的程序模块的观测，可以自定义实现 {@link ObservationDocumentation} 接口，遵照其规范定义该程序模块
  * 的指标名称的枚举、观测转换器等。

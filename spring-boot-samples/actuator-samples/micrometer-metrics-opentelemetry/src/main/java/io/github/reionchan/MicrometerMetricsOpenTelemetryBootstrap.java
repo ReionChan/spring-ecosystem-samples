@@ -70,7 +70,6 @@ import java.util.Random;
  * 2. 启动本项目
  *  启动时，将会尝试连接 OpenTelemetry Collector 服务器，故先执行上方 Docker Compose，
  *  启动 OpenTelemetry Collector 服务。
- *  通过设置查询表达式，将 demo.methodA、demo.methodB 调用情况展示在仪表盘上。
  * </pre>
  *
  * @author Reion

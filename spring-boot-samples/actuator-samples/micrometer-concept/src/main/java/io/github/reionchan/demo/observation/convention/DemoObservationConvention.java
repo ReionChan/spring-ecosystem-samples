@@ -1,4 +1,4 @@
-package io.github.reionchan.demo.observation;
+package io.github.reionchan.demo.observation.convention;
 
 import io.github.reionchan.demo.observation.context.DemoContext;
 import io.micrometer.observation.Observation;
