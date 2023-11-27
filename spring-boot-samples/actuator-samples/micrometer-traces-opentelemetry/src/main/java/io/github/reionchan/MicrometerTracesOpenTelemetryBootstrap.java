@@ -32,11 +32,11 @@ import org.springframework.context.ConfigurableApplicationContext;
 import java.util.Random;
 
 /**
- * Micrometer OpenTelemetry OTLP to Zipkin and Jaeger 整合观察追踪数据启动器
+ * Micrometer OpenTelemetry OTLP to Zipkin Jaeger Tempo 整合观察追踪数据启动器
  *
  * 本项目采用 OpenTelemetry 规范的 OTLP 协议，将 Micrometer 规范的指标、追踪数据
  * 发送到 OpenTelemetry Collector 服务器，然后利用它支持多种监控后端的导出器的特性
- * 将数据推送到 Zipkin、Jaeger 监控后端。
+ * 将数据推送到 Zipkin、Jaeger、Tempo 监控后端。
  *
  * 注意：
  *     SpringBoot 3.1.0+ 之后才支持自动装配 OTLP 协议的追踪数据导出 {@link OtlpAutoConfiguration}
@@ -98,11 +98,13 @@ import java.util.Random;
  *
  * === 项目环境配置 ===
  * 1. Docker Compose 配置
- *  1.1 编辑 docker-compose.yaml 添加 Zipkin、Jaeger 服务
- *  1.2 编辑 ./docker/opentelemetry-collector/otel-collector-config.yaml 配置 Zipkin、Jaeger 导出器
- *      服务的 pipelines 追踪项目中添加 zipkin、otlp (Jaeger 目前不在导出器支持名称中，变相修改为其支持的 otlp 名称)
+ *  1.1 编辑 docker-compose.yaml 添加 Zipkin、Jaeger、Tempo 服务
+ *  1.2 编辑 ./docker/opentelemetry-collector/otel-collector-config.yaml 配置 Zipkin、Jaeger、Tempo 导出器
+ *      服务的 pipelines 追踪项目中添加 zipkin、otlp (Jaeger、Tempo 目前不在导出器支持名称中，变相修改为其支持的 otlp 名称)
  *  1.3 编辑 ./docker/prometheus/prometheus.yml 配置 Prometheus 服务器
  *      设置 Prometheus 监控指标数据抓取的目标服务器地址为 otel-collector:8889
+ *  1.4 编辑 ./docker/grafana/provisioning/datasources/datasource.yml 配置 Grafana 数据源
+ *      新增 Tempo 数据源配置，方便观察追踪数据查询及图表
  * 2. 本机项目变更
  *  2.1 编辑 application.yaml，启用 OTLP 导出设置
  *      - 以 management.otlp.metrics.export 开头的属性配置添加 tracing，配置采样率及导出地址
@@ -127,7 +129,7 @@ import java.util.Random;
  *  1.4 访问 Jaeger 服务器查看跟踪数据：
  *      http://localhost:16686
  *
- *      当然，也可以在 Grafana 添加 Zipkin、Jaeger 数据源查看
+ *      当然，也可以在 Grafana 添加 Zipkin、Jaeger、Tempo 数据源查看
  *
  * 2. 启动本项目
  *  启动时，将会尝试连接 OpenTelemetry Collector 服务器，故先执行上方 Docker Compose，

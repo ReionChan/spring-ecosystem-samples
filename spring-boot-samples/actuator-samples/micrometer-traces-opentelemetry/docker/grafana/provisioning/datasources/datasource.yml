@@ -3,12 +3,23 @@ datasources:
   # Prometheus 数据源配置
   - name: Prometheus
     type: prometheus
-    access: proxy
+    uid: prometheus_ds_uid
     # 指定 Prometheus 服务器地址，此处采取 Docker 内访问的方式
     url: http://prometheus:9090
+    access: proxy
+    basicAuth: false
     jsonData:
       httpMethod: POST
       manageAlerts: true
       prometheusType: Prometheus
       prometheusVersion: 2.48.0
       cacheLevel: 'High'
+
+  # Tempo 数据源配置
+  - name: Tempo
+    type: tempo
+    uid: tempo_ds_uid
+    # 指定 Tempo 服务器地址，此处采取 Docker 内访问的方式
+    url: http://tempo:3200
+    access: proxy
+    basicAuth: false

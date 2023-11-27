@@ -28,18 +28,31 @@ services:
       - 4317 # OpenTelemetry Protocol (OTLP) over gRPC
       - 16686:16686 # UI
 
+  # Tempo 服务
+  tempo:
+    image: grafana/tempo:main-c00e7ef
+    container_name: tempo
+    restart: always
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    ports:
+      - 3200:3200 # tempo
+      - 4317 # otlp gRPC
+      - 4318 # otlp http
+    volumes:
+      - ./docker/tempo/tempo.yaml:/etc/tempo.yaml
+
   # OpenTelemetry Collector 服务
   otel-collector:
     image: otel/opentelemetry-collector-contrib:0.89.0
     container_name: otel-collector
     restart: always
     ports:
-      - 1888:1888 # pprof extension
-      - 8888:8888 # Prometheus metrics exposed by the Collector
+      #- 1888:1888 # pprof extension
+      #- 8888:8888 # Prometheus metrics exposed by the Collector
       - 8889:8889 # Prometheus exporter metrics
       - 13133:13133 # health_check extension
-      - 4317:4317 # OTLP gRPC receiver
-      - 4318:4318 # OTLP http receiver
+      #- 4317:4317 # OTLP gRPC receiver
+      - 4318:4318 # OTLP http receiver，SpringBoot 自动装配默认 OTLP via HTTP
       - 55679:55679 # zpages extension
     volumes:
       - ./docker/opentelemetry-collector/otel-collector-config.yaml:/etc/otelcol-contrib/otel-collector-config.yaml
@@ -48,6 +61,7 @@ services:
     depends_on:
       - zipkin
       - jaeger
+      - tempo
 
   # Prometheus 服务
   prometheus:
@@ -75,4 +89,6 @@ services:
       - ./docker/grafana/provisioning/:/etc/grafana/provisioning/
     # 配置依赖关系
     depends_on:
+      - otel-collector
       - prometheus
+      - tempo

@@ -15,12 +15,22 @@ exporters:
     endpoint: "http://zipkin:9411/api/v2/spans"
     format: proto
 
-  # Jaeger 导出器配置
-  # Jaeger 不在最新的导出器列表，此处更改成 Jaeger 支持的 otlp 形式导出
-  # 参考：https://github.com/open-telemetry/opentelemetry-helm-charts/blob/0def0da3d8beb5e95840e62c614fd616694c287e/charts/opentelemetry-demo/values.yaml#L627
-  # 支持清单参考：https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter
-  otlp:
+  # Jaeger OTLP 协议导出器配置
+  #
+  # 1. Jaeger 不在最新的导出器列表，此处更改成 Jaeger 支持的 OTLP 协议配置
+  #   参考：https://github.com/open-telemetry/opentelemetry-helm-charts/blob/0def0da3d8beb5e95840e62c614fd616694c287e/charts/opentelemetry-demo/values.yaml#L627
+  # 2. 官方支持清单：
+  #   参考：https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter
+  # 3. 存在多个 OTLP 导出器配置时，采用 type/[name] 形式区分，此处：Jaeger、Tempo 都采用 OTLP，故做此设置
+  #   参考：https://opentelemetry.io/docs/collector/configuration/#exporters
+  otlp/jaeger:
     endpoint: "http://jaeger:4317"
+    tls:
+      insecure: true
+
+  # Tempo OTLP 协议导出器配置
+  otlp/tempo:
+    endpoint: "http://tempo:4317"
     tls:
       insecure: true
 
@@ -49,5 +59,5 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      # 导出到 zipkin jaeger
-      exporters: [zipkin, otlp]
+      # 导出到 zipkin jaeger tempo
+      exporters: [zipkin, otlp/jaeger, otlp/tempo]
