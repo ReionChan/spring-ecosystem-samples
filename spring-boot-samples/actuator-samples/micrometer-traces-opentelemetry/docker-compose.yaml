@@ -12,7 +12,7 @@ version: "3.3"
 services:
   # Zipkin 服务
   zipkin:
-    image: openzipkin/zipkin
+    image: openzipkin/zipkin:3.0
     container_name: zipkin
     restart: always
     ports:
@@ -20,7 +20,7 @@ services:
 
   # Jaeger 服务
   jaeger:
-    image: jaegertracing/all-in-one
+    image: jaegertracing/all-in-one:1.51.0
     container_name: jaeger
     restart: always
     ports:
@@ -28,9 +28,9 @@ services:
       - 4317 # OpenTelemetry Protocol (OTLP) over gRPC
       - 16686:16686 # UI
 
-  # OpenTelemetry Collector 服务 v.0.89.0
+  # OpenTelemetry Collector 服务
   otel-collector:
-    image: otel/opentelemetry-collector-contrib
+    image: otel/opentelemetry-collector-contrib:0.89.0
     container_name: otel-collector
     restart: always
     ports:
@@ -49,9 +49,9 @@ services:
       - zipkin
       - jaeger
 
-  # Prometheus 服务 v.2.48.0
+  # Prometheus 服务
   prometheus:
-    image: bitnami/prometheus
+    image: bitnami/prometheus:2.48.0
     container_name: prometheus
     restart: always
     ports:
@@ -63,9 +63,9 @@ services:
     depends_on:
       - otel-collector
 
-  # Grafana 服务 v.10.2.2
+  # Grafana 服务
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:10.2.2
     container_name: grafana
     restart: always
     ports:

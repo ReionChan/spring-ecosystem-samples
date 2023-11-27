@@ -10,9 +10,9 @@ version: "3.3"
 
 # 服务列表
 services:
-  # OpenTelemetry Collector 服务 v.0.89.0
+  # OpenTelemetry Collector 服务
   otel-collector:
-    image: otel/opentelemetry-collector-contrib
+    image: otel/opentelemetry-collector-contrib:0.89.0
     container_name: otel-collector
     restart: always
     ports:
@@ -28,9 +28,9 @@ services:
     command:
       - "--config=/etc/otelcol-contrib/otel-collector-config.yaml"
 
-  # Prometheus 服务 v.2.48.0
+  # Prometheus 服务
   prometheus:
-    image: bitnami/prometheus
+    image: bitnami/prometheus:2.48.0
     container_name: prometheus
     restart: always
     ports:
@@ -42,9 +42,9 @@ services:
     depends_on:
       - otel-collector
 
-  # Grafana 服务 v.10.2.2
+  # Grafana 服务
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:10.2.2
     container_name: grafana
     restart: always
     ports:

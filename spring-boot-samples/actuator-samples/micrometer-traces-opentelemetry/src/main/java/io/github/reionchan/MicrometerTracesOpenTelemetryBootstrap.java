@@ -70,8 +70,7 @@ import java.util.Random;
  * 2. 自动装配类 {@link OpenTelemetryAutoConfiguration}
  *  2.1 注册 {@link OpenTelemetry} 实现类 {@link OpenTelemetrySdk}
  *      用来提供资源、取样器等配置，OpenTelemetry 对可观测性实现的入口
- *  2.2 注册 {@link SdkTracerProvider}
- *      用来获得 {@linkplain SdkTracer} 实例的提供者
+ *  2.2 注册 {@link SdkTracerProvider}*      用来获得 {@code SdkTracer} 实例的提供者
  *  2.3 注册 {@link ContextPropagators}
  *      用来获获得在边界传递时对追踪数据的注入与提取的传播器，默认基于文本格式的传播器
  *  2.4 注册 {@link Sampler}
