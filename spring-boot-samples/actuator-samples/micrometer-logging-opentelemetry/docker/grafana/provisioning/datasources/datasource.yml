@@ -1,0 +1,65 @@
+# 数据源配置
+datasources:
+  # Prometheus 数据源配置
+  - name: Prometheus
+    type: prometheus
+    uid: prometheus_ds_uid
+    orgId: 1
+    # 指定 Prometheus 服务器地址，此处采取 Docker 内访问的方式
+    url: http://prometheus:9090
+    access: proxy
+    basicAuth: false
+    jsonData:
+      httpMethod: GET
+      manageAlerts: true
+      prometheusType: Prometheus
+      prometheusVersion: 2.48.0
+
+  # Tempo 数据源配置
+  - name: Tempo
+    type: tempo
+    uid: tempo_ds_uid
+    orgId: 1
+    version: 1
+    apiVersion: 1
+    # 指定 Tempo 服务器地址，此处采取 Docker 内访问的方式
+    url: http://tempo:3200
+    access: proxy
+    basicAuth: false
+    editable: true
+    isDefault: true
+    allowUiUpdates: true
+    jsonData:
+      tracesToLogsV2:
+        # Field with an internal link pointing to a logs data source in Grafana.
+        # datasourceUid value must match the uid value of the logs data source.
+        datasourceUid: 'loki_ds_uid'
+        spanStartTimeShift: '1h'
+        spanEndTimeShift: '-1h'
+        tags: [ { key: 'service.name', value: 'job' } ]
+        filterByTraceID: true
+        filterBySpanID: false
+      serviceMap:
+        datasourceUid: 'prometheus_ds_uid'
+      nodeGraph:
+        enabled: true
+      search:
+        hide: false
+      lokiSearch:
+        datasourceUid: 'loki_ds_uid'
+      traceQuery:
+        timeShiftEnabled: true
+        spanStartTimeShift: '1h'
+        spanEndTimeShift: '-1h'
+
+  # Loki 数据源配置
+  - name: Loki
+    type: loki
+    uid: loki_ds_uid
+    orgId: 1
+    # 指定 Loki 服务器地址，此处采取 Docker 内访问的方式
+    url: http://loki:3100
+    access: proxy
+    basicAuth: false
+    jsonData:
+      maxLines: 1000

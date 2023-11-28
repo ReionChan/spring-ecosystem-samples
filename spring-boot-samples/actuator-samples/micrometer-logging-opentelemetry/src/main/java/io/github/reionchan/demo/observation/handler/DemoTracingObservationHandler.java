@@ -2,7 +2,9 @@ package io.github.reionchan.demo.observation.handler;
 
 import io.github.reionchan.demo.observation.context.DemoContext;
 import io.micrometer.observation.Observation;
+import io.micrometer.tracing.ScopedSpan;
 import io.micrometer.tracing.Span;
+import io.micrometer.tracing.TraceContext;
 import io.micrometer.tracing.Tracer;
 import io.micrometer.tracing.handler.TracingObservationHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,6 @@ public class DemoTracingObservationHandler implements TracingObservationHandler<
 
     @Autowired
     private Tracer tracer;
-
     @Override
     public void onStart(DemoContext context) {
         Span span = tracer.nextSpan().name(context.getMethod().getName());

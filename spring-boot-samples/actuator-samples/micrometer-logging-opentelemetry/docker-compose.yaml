@@ -10,23 +10,23 @@ version: "3.3"
 
 # 服务列表
 services:
-  # Zipkin 服务
-  zipkin:
-    image: openzipkin/zipkin:3.0
-    container_name: zipkin
+  # Loki 服务
+  loki:
+    image: grafana/loki:2.9.2
+    container_name: loki
     restart: always
+    command: "-config.file=/etc/loki/loki-config.yaml"
     ports:
-      - 9411:9411
-
-  # Jaeger 服务
-  jaeger:
-    image: jaegertracing/all-in-one:1.51.0
-    container_name: jaeger
-    restart: always
-    ports:
-      - 4318 # OpenTelemetry Protocol (OTLP) over HTTP
-      - 4317 # OpenTelemetry Protocol (OTLP) over gRPC
-      - 16686:16686 # UI
+      - 3100:3100
+      - 7946
+      - 9095
+    volumes:
+      - ./docker/loki/loki-config.yaml:/etc/loki/loki-config.yaml
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3100/ready || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Tempo 服务
   tempo:
@@ -59,9 +59,8 @@ services:
     command:
       - "--config=/etc/otelcol-contrib/otel-collector-config.yaml"
     depends_on:
-      - zipkin
-      - jaeger
       - tempo
+      - loki
 
   # Prometheus 服务
   prometheus:
@@ -92,3 +91,4 @@ services:
       - otel-collector
       - prometheus
       - tempo
+      - loki

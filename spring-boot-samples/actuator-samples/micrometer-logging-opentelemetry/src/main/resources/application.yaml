@@ -3,8 +3,7 @@ server:
 
 spring:
   application:
-    name: micrometer-traces-opentelemetry
-
+    name: micrometer-logging-opentelemetry
 
 management:
   endpoints:
@@ -12,10 +11,14 @@ management:
       exposure:
         include: health,metrics
 
+  # 全局指标设置
   metrics:
     tags:
       application: ${spring.application.name}
+
+  # 全局追踪设置
   tracing:
+    # 采样率设置
     sampling:
       probability: 1.0
 
@@ -25,13 +28,16 @@ management:
       export:
         enabled: true
         step: 15s
-        # 默认 OTLP 服务器地址
+        # 默认 OTLP Metrics 服务器地址
         url: http://localhost:4318/v1/metrics
     tracing:
-      # 默认 OTLP 服务器地址
+      # 默认 OTLP Traces 服务器地址
       endpoint: http://localhost:4318/v1/traces
+    logging:
+      # 默认 OTLP Logging 服务器地址
+      endpoint: http://localhost:4318/v1/logs
 
 # 日志控制台输出追踪日志
 logging:
   pattern:
-    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+    level: "%5p [%X{traceId:-}, %X{spanId:-}]"

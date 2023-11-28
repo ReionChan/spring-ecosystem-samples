@@ -9,17 +9,19 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>micrometer-traces-opentelemetry</artifactId>
-    <name>2.1.4-Micrometer Traces OpenTelemetry Zipkin、Jaeger、Tempo 整合</name>
+    <artifactId>micrometer-logging-opentelemetry</artifactId>
+    <name>2.1.5-Micrometer Logging OpenTelemetry Tempo and Loki 整合</name>
     <packaging>jar</packaging>
     <description>
-        应用向 OpenTelemetry 推送指标、追踪数据
-        OpenTelemetry 将指标、追踪数据推送给 Zipkin、Jaeger、Tempo（根据不同监控，它会进行格式转换），
+        应用向 OpenTelemetry 推送指标、追踪、日志数据
         Prometheus 使用 OTLP 协议拉取 OpenTelemetry 指标数据，
-        Grafana 使用 Prometheus 协议拉取指标数据进行图形化展示。
+        OpenTelemetry 使用 OTLP 协议将追踪数据推送给 Tempo，
+        OpenTelemetry 使用 OTLP 协议将日志数据推送给 Loki，
+        Grafana 分别从 Prometheus、Tempo、Loki 拉取指标、追踪、日志数据进行图形化展示。
     </description>
 
     <dependencies>
+
         <!-- Spring Boot Actuator Starter 依赖 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -54,6 +56,14 @@
         <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-exporter-otlp</artifactId>
+        </dependency>
+
+        <!-- OpenTelemetry Logback Appender 依赖 -->
+        <!-- https://github.com/open-telemetry/opentelemetry-java-instrumentation/blob/main/instrumentation/logback/logback-appender-1.0/library/README.md -->
+        <dependency>
+            <groupId>io.opentelemetry.instrumentation</groupId>
+            <artifactId>opentelemetry-logback-appender-1.0</artifactId>
+            <version>1.32.0-alpha</version>
         </dependency>
 
     </dependencies>

@@ -1,0 +1,56 @@
+receivers:
+  otlp:
+    protocols:
+      # 采用 http 协议在端口 4318 监听推送来的指标数据
+      http:
+
+processors:
+  batch:
+
+# 导出器配置
+exporters:
+  # Loki 导出配置器
+  loki:
+    endpoint: "http://loki:3100/loki/api/v1/push"
+    default_labels_enabled:
+      exporter: false
+      job: true
+
+  # Tempo OTLP 协议导出器配置
+  otlp/tempo:
+    endpoint: "http://tempo:4317"
+    tls:
+      insecure: true
+
+  # Prometheus 导出器配置
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+    # 给指标数据添加标签，标记数据来源 otel-collector
+    const_labels:
+      source: otel-col
+
+extensions:
+  health_check:
+  pprof:
+  zpages:
+
+service:
+  extensions: [health_check, pprof, zpages]
+  pipelines:
+    # 指标数据设置
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      # 导出到 prometheus
+      exporters: [prometheus]
+    # 追踪数据设置
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      # 导出到 tempo
+      exporters: [otlp/tempo]
+    # 日志数据设置
+    logs:
+      receivers: [otlp]
+      # 导出到 loki
+      exporters: [loki]

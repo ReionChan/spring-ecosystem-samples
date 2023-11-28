@@ -19,6 +19,7 @@
         <module>micrometer-metrics-prometheus</module>
         <module>micrometer-metrics-opentelemetry</module>
         <module>micrometer-traces-opentelemetry</module>
+        <module>micrometer-logging-opentelemetry</module>
     </modules>
 
 </project>
