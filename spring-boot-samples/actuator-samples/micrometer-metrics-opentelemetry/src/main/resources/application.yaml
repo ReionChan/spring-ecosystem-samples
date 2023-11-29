@@ -17,22 +17,23 @@ management:
       application: ${spring.application.name}
 
     distribution:
-      # 百分位值
-      percentiles:
-        demo:
-          percentiles: [0.25, 0.5, 0.75, 0.90, 0.95]
+      # 百分位值 (客户端计算好百分位，用于不支持百分位直方图的监控终端)
+#      percentiles:
+#        demo:
+#          percentiles: [0.25, 0.5, 0.90, 0.95]
 #      # 百分位直方图
       percentiles-histogram:
         demo: true
-#      # 最小期望值
-#      minimum-expected-value:
-#        demo: 90ms
-#      # 最大期望值
-#      maximum-expected-value:
-#        demo: 900ms
-#      # Service Level Objectives 服务水平目标
-#      slo:
-#        demo: 100, 200, 400, 800, 1000
+      # 最小期望值 （控制百分位直方图样本起始值）
+      minimum-expected-value:
+        demo: 90ms
+      # 最大期望值（控制百分位直方图样本结束值）
+      maximum-expected-value:
+        demo: 900ms
+      # Service Level Objectives 服务水平目标
+      # 在百分位直方图中添加服务水平目标对应的百分位值
+      slo:
+        demo: 100, 200, 500, 800, 1000, 5000
 
   # === OpenTelemetry Collector 遥测数据收集器配置 ===
   otlp:
