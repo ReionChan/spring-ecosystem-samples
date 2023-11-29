@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Random;
+
 import static org.springframework.util.ReflectionUtils.findMethod;
 
 /**
@@ -36,20 +38,22 @@ public class DemoTarget {
     @Autowired(required = false)
     private DemoObservationConvention convention;
 
+    private Random random = new Random();
+
     public void methodA() {
         // 上下文 DemoContext 放入 lambda 表达式，仅当启用 observation 时才会创建
         Observation observation = DemoObservationDocument.DEFAULT.observation(
-            convention, DEFAULT_CONVENTION,
-            () -> {
-                DemoContext ctx = new DemoContext(findMethod(DemoTarget.class, "methodA"));
-                ctx.setNote("caller: methodA");
-                return ctx;
-            }, observationRegistry);
+                convention, DEFAULT_CONVENTION,
+                () -> {
+                    DemoContext ctx = new DemoContext(findMethod(DemoTarget.class, "methodA"));
+                    ctx.setNote("caller: methodA");
+                    return ctx;
+                }, observationRegistry);
         // 观察开始
         observation.start();
         log.info("do something in methodA");
         try {
-            Thread.sleep(200);
+            Thread.sleep(random.nextInt(300));
             // 嵌套观察
             observation.scoped(() -> methodB());
         } catch (Exception e) {
@@ -65,7 +69,7 @@ public class DemoTarget {
     public void methodB() {
         log.info("do something in methodB");
         try {
-            Thread.sleep(300);
+            Thread.sleep(random.nextInt(500));
         } catch (Exception e) {
             log.error("error", e);
         }

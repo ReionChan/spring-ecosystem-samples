@@ -83,7 +83,7 @@ public class MicrometerMetricsOpenTelemetryBootstrap {
         DemoTarget observationTarget = ctx.getBean(DemoTarget.class);
         Random random = new Random();
         while (true) {
-            Thread.sleep(random.nextInt(2000));
+            Thread.sleep(random.nextInt(1000));
             observationTarget.methodA();
         }
     }
