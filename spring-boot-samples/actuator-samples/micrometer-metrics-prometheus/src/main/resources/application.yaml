@@ -21,6 +21,29 @@ management:
         # ---------------------------------------------
         include: health,metrics,prometheus
 
+  # 全局指标设置
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+    distribution:
+      # 百分位值
+      percentiles:
+        demo:
+          percentiles: [0.25, 0.5, 0.75, 0.90, 0.95]
+      # 百分位直方图
+      percentiles-histogram:
+        demo: true
+      # 最小期望值
+      minimum-expected-value:
+        demo: 90ms
+      # 最大期望值
+      maximum-expected-value:
+        demo: 900ms
+      # Service Level Objectives 服务水平目标
+      slo:
+        demo: 100, 200, 400, 800, 1000
+
   # === Prometheus 监控指标配置 ===
   prometheus:
     metrics:

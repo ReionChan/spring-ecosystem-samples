@@ -80,7 +80,7 @@ public class MicrometerMetricsPrometheusBootstrap {
         DemoTarget observationTarget = ctx.getBean(DemoTarget.class);
         Random random = new Random();
         while (true) {
-            Thread.sleep(random.nextInt(2000));
+//            Thread.sleep(random.nextInt(2000));
             observationTarget.methodA();
         }
     }
