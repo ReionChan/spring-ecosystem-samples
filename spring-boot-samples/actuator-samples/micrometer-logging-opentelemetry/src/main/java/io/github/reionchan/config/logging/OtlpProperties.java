@@ -21,4 +21,6 @@ public class OtlpProperties {
 
     private Duration timeout = Duration.ofSeconds(10);
 
+    private Duration exporterTimeout = Duration.ofSeconds(10);
+
 }

@@ -32,15 +32,22 @@ import org.springframework.core.env.Environment;
 @EnableConfigurationProperties(OtlpProperties.class)
 public class OtlpHttpLoggingConfiguration {
 
+    /**
+     * 设置批量日志记录导出处理器
+     */
     @Bean
     BatchLogRecordProcessor batchLogRecordProcessor(OtlpProperties properties) {
         return BatchLogRecordProcessor.builder(
                 OtlpHttpLogRecordExporter.builder()
                    .setEndpoint(properties.getEndpoint())
                    .setTimeout(properties.getTimeout()).build()
-        ).build();
+        ).setExporterTimeout(properties.getExporterTimeout()).build();
     }
 
+    /**
+     * 设置日志记录器提供者
+     *  关联：日志导出处理器与 SdkLoggerProvider
+     */
     @Bean
     SdkLoggerProvider sdkLoggerProvider(Environment environment, ObjectProvider<LogRecordProcessor> loggerRecordProcessors) {
         String applicationName = environment.getProperty("spring.application.name", "application");
@@ -51,13 +58,20 @@ public class OtlpHttpLoggingConfiguration {
         return builder.build();
     }
 
+    /**
+     * SpringBoot 自动装配的 OpenTelemetry 没有注册 LoggerProvider
+     * 故重新定义 OpenTelemetry 实例，关联 LoggerProvider
+     *
+     */
     @Bean
     OpenTelemetry openTelemetry(SdkTracerProvider sdkTracerProvider, SdkLoggerProvider sdkLoggerProvider, ContextPropagators contextPropagators) {
         OpenTelemetry openTelemetry = OpenTelemetrySdk.builder()
                 .setTracerProvider(sdkTracerProvider)
+                // 设置 LoggerProvider
                 .setLoggerProvider(sdkLoggerProvider)
                 .setPropagators(contextPropagators)
                 .build();
+        // 将 OpenTelemetry 导出日志的适配记录器关联 OpenTelemetry
         OpenTelemetryAppender.install(openTelemetry);
         return openTelemetry;
     }
