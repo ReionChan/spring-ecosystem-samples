@@ -7,7 +7,8 @@
   * [micrometer-concept](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-boot-samples/actuator-samples/micrometer-concept)
   * [micrometer-metrics-prometheus-grafana](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-boot-samples/actuator-samples/micrometer-metrics-prometheus)
   * [micrometer-metrics-opentelemetry-prometheus-grafana](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-boot-samples/actuator-samples/micrometer-metrics-opentelemetry)
-  * [micrometer-traces-opentelemetry-(zipkin jaeger)-prometheus-grafana](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-boot-samples/actuator-samples/micrometer-traces-opentelemetry)
+  * [micrometer-traces-opentelemetry-(zipkin jaeger tempo)-prometheus-grafana](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-boot-samples/actuator-samples/micrometer-traces-opentelemetry)
+  * [micrometer-logging-opentelemetry-loki-tempo-prometheus-grafana](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-boot-samples/actuator-samples/micrometer-logging-opentelemetry)
   
 ## spring-cloud-samples 2022.0.x
 * [commons-samples](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-cloud-samples/commons-samples)
