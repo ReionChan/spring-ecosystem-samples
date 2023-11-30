@@ -9,12 +9,20 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,metrics
+        include: health,metrics,prometheus
 
   # 全局指标设置
   metrics:
     tags:
       application: ${spring.application.name}
+      instance: "localhost:${server.port}:${random.value}"
+
+    distribution:
+      percentiles:
+        demo:
+          percentiles: [0.5, 0.95]
+      percentiles-histogram:
+        demo: true
 
   # 全局追踪设置
   tracing:
@@ -27,7 +35,7 @@ management:
     metrics:
       export:
         enabled: true
-        step: 15s
+        step: 5s
         # 默认 OTLP Metrics 服务器地址
         url: http://localhost:4318/v1/metrics
     tracing:

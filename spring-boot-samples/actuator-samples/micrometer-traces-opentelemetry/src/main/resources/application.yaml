@@ -5,17 +5,36 @@ spring:
   application:
     name: micrometer-traces-opentelemetry
 
-
 management:
   endpoints:
     web:
       exposure:
         include: health,metrics
 
+  # 通用指标设置
   metrics:
     tags:
       application: ${spring.application.name}
+
+    # 添加百分位直方图设置
+    distribution:
+      # 百分位直方图
+      percentiles-histogram:
+        demo: true
+      # 最小期望值 （控制百分位直方图样本起始值）
+      minimum-expected-value:
+        demo: 90ms
+      # 最大期望值（控制百分位直方图样本结束值）
+      maximum-expected-value:
+        demo: 900ms
+      # Service Level Objectives 服务水平目标
+      # 在百分位直方图中添加服务水平目标对应的百分位值
+      slo:
+        demo: 100, 200, 500, 800, 1000, 5000
+
+  # 通用追踪设置
   tracing:
+    # 采样率设置
     sampling:
       probability: 1.0
 
@@ -24,7 +43,7 @@ management:
     metrics:
       export:
         enabled: true
-        step: 15s
+        step: 5s
         # 默认 OTLP 服务器地址
         url: http://localhost:4318/v1/metrics
     tracing:

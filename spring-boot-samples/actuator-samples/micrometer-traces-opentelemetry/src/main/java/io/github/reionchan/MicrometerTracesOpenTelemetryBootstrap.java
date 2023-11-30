@@ -2,9 +2,13 @@ package io.github.reionchan;
 
 import io.github.reionchan.demo.DemoTarget;
 import io.github.reionchan.demo.observation.handler.DemoTracingObservationHandler;
+import io.micrometer.core.instrument.Meter;
 import io.micrometer.observation.transport.ReceiverContext;
 import io.micrometer.observation.transport.SenderContext;
+import io.micrometer.registry.otlp.OtlpMeterRegistry;
 import io.micrometer.tracing.Baggage;
+import io.micrometer.tracing.Span;
+import io.micrometer.tracing.Tracer;
 import io.micrometer.tracing.handler.DefaultTracingObservationHandler;
 import io.micrometer.tracing.handler.PropagatingReceiverTracingObservationHandler;
 import io.micrometer.tracing.handler.PropagatingSenderTracingObservationHandler;
@@ -17,6 +21,8 @@ import io.opentelemetry.context.propagation.TextMapPropagator;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
+import io.opentelemetry.sdk.trace.ReadWriteSpan;
+import io.opentelemetry.sdk.trace.ReadableSpan;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.SpanProcessor;
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
@@ -69,8 +75,48 @@ import java.util.Random;
  *
  * 2. 自动装配类 {@link OpenTelemetryAutoConfiguration}
  *  2.1 注册 {@link OpenTelemetry} 实现类 {@link OpenTelemetrySdk}
- *      用来提供资源、取样器等配置，OpenTelemetry 对可观测性实现的入口
- *  2.2 注册 {@link SdkTracerProvider}*      用来获得 {@code SdkTracer} 实例的提供者
+ *      【重要】OpenTelemetry 对指标、追踪、日志三种类别观测数据、传播器的提供商策略接口
+ *
+ *              | Micrometer-API |      Bridge Package               |    OpenTelemetry-API
+ *     ===============================================================================================================
+ *     Metrics  | {@link Meter}  |  Micrometer-registry-otlp         | {@linkplain io.opentelemetry.api.metrics.Meter}
+ *              |                |  {@link OtlpMeterRegistry} 转化    | {@literal io.opentelemetry.proto.metrics.v1.Metric}
+ *     ---------------------------------------------------------------------------------------------------------------
+ *     Traces   | {@link Tracer} |  Micrometer-tracing-bridge-otel    | {@link io.opentelemetry.api.trace.Tracer}
+ *              | {@link Span}   |  OtelTracer、OtelSpan 适配          | {@link io.opentelemetry.api.trace.Span}
+ *     ---------------------------------------------------------------------------------------------------------------
+ *     Logging  |                | opentelemetry-logback-appender-1.0 | {@link io.opentelemetry.api.logs.Logger}
+ *              |                | OpenTelemetryAppender} 适配         | {@link io.opentelemetry.api.logs.LogRecordBuilder}
+ *     ---------------------------------------------------------------------------------------------------------------
+ *     其中，在系统观测时，生成的 Span 如何借由 OtelSpan 发送到 OpenTelemetry Collector 服务器原理：
+ *     1. {@link Span.Builder} 生成的 {@link Span} 实例，交由桥接适配的 {@link OtelTracer} 生成 OtelSpan
+ *        而 OtelSpan 包装适配 {@link io.opentelemetry.api.trace.Span} 的实现类 {@linkplain io.opentelemetry.sdk.trace.SdkSpan}
+ *        它实现 {@linkplain ReadWriteSpan}，它关联 {@link SpanProcessor} 处理器 (下面 2.5 装载的批处理 Span 处理器)
+ *        代码参考 {@link io.micrometer.tracing.otel.bridge.OtelSpanBuilder#start()}：
+ *        {@code
+ *          public Span start() {
+ *              // 省略代码，此处 tracer 为 SdkTracer，SpanBuilder 为 SdkSpanBuilder
+ *              SpanBuilder spanBuilder = this.tracer.spanBuilder(StringUtils.isNotEmpty(this.name) ? this.name : "");
+ *              io.opentelemetry.api.trace.Span span = spanBuilder.startSpan();
+ *              return OtelSpan.fromOtel(span);
+ *          }
+ *        }
+ *     2. 之后所有对 Micrometer {@link Span} API 操作都借由 OtelSpan 委托给 {@linkplain io.opentelemetry.sdk.trace.SdkSpan} 执行
+ *        在 onEnd 时，它会通知其关联的 {@link SpanProcessor} 处理当前 Span 的发送，例如：
+ *        {@link BatchSpanProcessor#onEnd(ReadableSpan)} 将把 Span 交给发送工作线程 work 处理：
+ *        {@code
+ *          @Override
+ *          public void onEnd(ReadableSpan span) {
+ *              if (span == null || !span.getSpanContext().isSampled()) {
+ *                  return;
+ *              }
+ *              worker.addSpan(span);
+ *          }
+ *        }
+ *        它默认等到达到规定批量发送数量或超过 30 秒就发送当前收集的所有 Span。
+ *
+ *  2.2 注册 {@link SdkTracerProvider}
+ *      用来获得 {@code SdkTracer} 实例的提供者
  *  2.3 注册 {@link ContextPropagators}
  *      用来获获得在边界传递时对追踪数据的注入与提取的传播器，默认基于文本格式的传播器
  *  2.4 注册 {@link Sampler}
@@ -148,7 +194,7 @@ public class MicrometerTracesOpenTelemetryBootstrap {
         DemoTarget observationTarget = ctx.getBean(DemoTarget.class);
         Random random = new Random();
         while (true) {
-            Thread.sleep(random.nextInt(2000));
+            Thread.sleep(random.nextInt(1000));
             observationTarget.methodA();
         }
     }
