@@ -4,7 +4,7 @@
 
 ## Concept
 
-&emsp;&emsp;Introduce core principl of **Micrometer** and how to custom some component to observe your code.
+&emsp;&emsp;Introducing principal of **Micrometer** and how to custom some component to observe your code.
 
 ### [micrometer-concept](https://github.com/ReionChan/spring-ecosystem-samples/tree/main/spring-boot-samples/actuator-samples/micrometer-concept)
 
