@@ -88,9 +88,11 @@ import java.net.HttpURLConnection;
  *      此外，自动装配类 {@link FeignLoadBalancerAutoConfiguration} 额外条件装配第三方客户端配置类：
  *      1. {@link org.springframework.cloud.openfeign.loadbalancer.OkHttpFeignLoadBalancerConfiguration OkHttpFeignLoadBalancerConfiguration}
  *          当 {@link okhttp3.OkHttpClient} 客户端被引入时，
+ *          并且属性：spring.cloud.openfeign.okhttp.enabled 设置为 true 时，
  *          将被封装为 {@link Client} 实现类 {@link feign.okhttp.OkHttpClient}
  *      2. {@link org.springframework.cloud.openfeign.loadbalancer.HttpClient5FeignLoadBalancerConfiguration HttpClient5FeignLoadBalancerConfiguration}
  *          当 {@link org.apache.hc.client5.http.classic.HttpClient HttpClient} 客户端被引入时，
+ *          由于属性：spring.cloud.openfeign.httpclient.hc5.enabled 做了缺失默认启用，故不必特意配置
  *          将被封装为 {@link Client} 实现类 {@link feign.hc5.ApacheHttp5Client}
  *       三种 {@link Client} 实现类装载优先级：
  *       OkHttpClient > ApacheHttp5Client > Client.Default
