@@ -7,6 +7,10 @@ import io.github.reionchan.exception.GlobalExceptionHandler;
 import io.github.reionchan.response.WebResponse;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.gateway.discovery.DiscoveryClientRouteDefinitionLocator;
+import org.springframework.cloud.gateway.discovery.GatewayDiscoveryClientAutoConfiguration;
+import org.springframework.cloud.gateway.filter.factory.RewritePathGatewayFilterFactory;
+import org.springframework.cloud.gateway.handler.predicate.PathRoutePredicateFactory;
 
 /**
  * 网关集成 SpringDoc 文档服务启动器
@@ -30,13 +34,31 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *          2.3 路径重写 RewritePath=/v3/api-docs/(?<path>.*), /$\{path}/v3/api-docs
  *              例如：/v3/api-docs/foo-service
  *              将被重写成：http://gateway-ip:port/foo-service/v3/api-docs
- *          2.4 由于网关服务发现的默认负载均衡路由规则
+ *          2.4 由于网关服务发现的默认负载均衡路由规则 (重写目的 URI 变为 lb://foo-service)
  *              路径重写：'/foo-service/?(?<remaining>.*)' '/${remaining}
  *              路径负载 URL：lb://foo-service
  *              所以，http://gateway-ip:port/foo-service/v3/api-docs
  *              将被定向到：lb://foo-service/v3/api-docs
  *              最后交给负载均衡客户端过滤器解析 lb://foo-service 根据负载均衡算法分配具体 foo-service 服务的 ip、端口
  *              最终转换为：http://ip:port/v3/api-docs 渲染 foo-service 的 API 文档首页
+ *
+ *              原理：{@link GatewayDiscoveryClientAutoConfiguration}
+ *                  1. {@link GatewayDiscoveryClientAutoConfiguration#initPredicates()}
+ *                      定义一个路径匹配断言 {@link PathRoutePredicateFactory}：
+ *                          pattern         '/'+serviceId+'/**'
+ *                  2. {@link GatewayDiscoveryClientAutoConfiguration#initFilters()}
+ *                      定义一个路径重写过滤器 {@link RewritePathGatewayFilterFactory}：
+ *                          regexp:         '/' + serviceId + '/?(?<remaining>.*)'
+ *                          replacement:    '/${remaining}'
+ *                  3. {@link GatewayDiscoveryClientAutoConfiguration#discoveryLocatorProperties()}
+ *                      将1、2 路径匹配断言、过滤器设置到默认的服务发现定位属性配置中，交由下面 4 步骤完成服务发现客户端路由定义
+ *                      此外，它还定义了默认的路由的目的 URI 格式 {@code urlExpression}：
+ *                          'lb://'+serviceId
+ *                  4. {@link DiscoveryClientRouteDefinitionLocator#getRouteDefinitions()}
+ *                      它将上面定义的断言、过滤器中表达式中的 springEL 表达式变量 serviceId 替换为正在的服务名称
+ *                      最终形成一条具体的服务实例的负载均衡路由规则：
+ *                      该方法生成一条路由规则：
+ *                          将【/foo-service/bar-path】定向到【lb://foo-service/bar-path】
  *
  *  实现：
  *      1. 参考 3.1.4 Gateway 集成 Nacos，先完成 Gateway 与 Nacos 集成

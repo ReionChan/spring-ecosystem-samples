@@ -21,9 +21,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
  *
  * <pre>
  *     1. 运行环境基于上一个模块 spring-security-dao
- *        故基本 SpringBoot + JPA + H2 基本设置参考之前模块介绍
+ *        故基于 SpringBoot + JPA + H2 的设置参考之前模块介绍
  *     2. 使 Servlet 服务器 Session 管理失效，变为无状态服务器
- *          2.1 application.yam 设置 session 跟踪模式为空：
+ *          2.1 application.yaml 设置 session 跟踪模式为空：
  *              server.servlet.session.tracking-modes=
  *          2.2 Security 设置 session 生成策略为无状态：
  *              SessionCreationPolicy.STATELESS
@@ -41,7 +41,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
  *              然后追加认证头信息访问他们权限范围内或外的页面，验证权限控制
  *              例如：/user/info  /admin/info
  *
- *  本示例还是用了注解 {@link EnableMethodSecurity}，激活了基于方法基本的注解形式的安全控制。
+ *  本示例还是用了注解 {@link EnableMethodSecurity}，激活了基于方法注解形式的安全控制。
  *
  *  1. prePostEnabled=true (默认)
  *      开启 Spring 的安全注解 {@link PreAuthorize} {@link PreAuthorize} {@link PreFilter} {@link PostFilter}
