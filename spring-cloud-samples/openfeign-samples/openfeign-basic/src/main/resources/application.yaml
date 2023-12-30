@@ -30,7 +30,7 @@ spring:
 
     # === Open Feign 配置 ===
     openfeign:
-      # --- 懒加载设置，默认 false ---
+      # --- 懒加载设置，默认该属性未设置，即默认开启懒加载 ---
       lazy-attributes-resolution: false
       # --- 客户端配置 ---
       client:
