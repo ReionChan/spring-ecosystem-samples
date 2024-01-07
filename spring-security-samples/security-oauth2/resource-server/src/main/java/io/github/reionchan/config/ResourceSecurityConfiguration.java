@@ -7,10 +7,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
  * 资源服务安全配置
@@ -57,16 +57,19 @@ public class ResourceSecurityConfiguration {
         log.info("--- OAuth2 资源服务器 HttpSecurity 进行定制化配置 ---");
         http
                 // 失效 CSRF
-                .csrf().disable()
+                .csrf(csrf -> csrf.disable())
                 // 禁用登录入口
-                .formLogin().disable()
-                .httpBasic().disable()
+                .formLogin(form -> form.disable())
+                .httpBasic(httpBasic -> httpBasic.disable())
                 // 启用资源服务器配置，并定制 JWT 令牌解析器配置，提供基于 Bearer JWT 的认证器
-                .oauth2ResourceServer(resServerConf -> resServerConf.jwt())
+                .oauth2ResourceServer(resServerConf -> resServerConf.jwt(jwt -> {}))
                 // 使资源服务器变成无状态服务器
                 .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests().requestMatchers("/favicon.ico", "/", "/errorPage").permitAll()
-                .anyRequest().authenticated();
+                .authorizeHttpRequests(httpReq -> { httpReq
+                        .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
+                        .requestMatchers("/favicon.ico", "/errorPage").permitAll()
+                        .anyRequest().authenticated();
+                });
 
         return http.build();
     }

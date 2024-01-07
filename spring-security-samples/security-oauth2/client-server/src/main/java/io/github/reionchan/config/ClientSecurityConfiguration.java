@@ -7,16 +7,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
-import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2ClientConfigurer;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.web.SecurityFilterChain;
-
-import java.util.stream.Collectors;
 
 /**
  * 客户端安全配置
@@ -62,17 +55,19 @@ public class ClientSecurityConfiguration {
         log.info("--- OAuth2 客户端的 HttpSecurity 定制化配置 ---");
         http
                 // 失效 CSRF
-                .csrf().disable()
+                .csrf(csrf -> csrf.disable())
                 // 开启 OAuth2 授权登录端点
                 .oauth2Login(login->login.successHandler((req, res, auth) -> {
                     res.sendRedirect("/user/info");
                 }))
                 // 激活 OAuth2 客户端支持
-                .oauth2Client().and()
-                .headers().frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin).and()
+                .oauth2Client(client -> {})
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 // 忽略 OAuth2 客户端端点及一些静态资源的认证
-                .authorizeHttpRequests().requestMatchers("/favicon.ico", "/", "/errorPage", "/oauth2/**", "/login/**").permitAll()
-                .anyRequest().authenticated();
+                .authorizeHttpRequests(httpReq -> httpReq
+                    .requestMatchers("/favicon.ico", "/", "/errorPage", "/oauth2/**", "/login/**").permitAll()
+                    .anyRequest().authenticated()
+                );
 
         return http.build();
     }

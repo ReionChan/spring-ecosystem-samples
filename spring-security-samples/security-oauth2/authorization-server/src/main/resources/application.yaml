@@ -38,7 +38,8 @@ spring:
       settings:
         # 是否允许其他主机访问
         webAllowOthers: false
-        web-admin-password: admin
+        # 密码如设置需 128 位
+        #web-admin-password: admin
 
   # JPA 设置
   jpa:

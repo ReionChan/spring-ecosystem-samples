@@ -16,13 +16,13 @@ import io.github.reionchan.util.RSAKeyUtil;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -125,21 +125,21 @@ public class AuthorizationSecurityConfig {
         RequestMatcher endpointsMatcher = serverConfigurer.getEndpointsMatcher();
 
         http
-                // 将所有暴露的端点匹配器设置到 httpSecurity 的安全过滤器的匹配器
-                .securityMatcher(endpointsMatcher)
-                // 开启 BearerTokenAuthenticationFilter 过滤器，校验请求里的 Bearer 令牌
-                // OIDC 的 /userinfo 端点需要基于 Bearer 令牌的身份认证
-                .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
-                .authorizeHttpRequests(authorize -> {
-                    authorize.anyRequest().authenticated();
-                })
-                .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
-                // 应用本自定义配置 OAuth2AuthorizationServerConfigurer
-                .apply(serverConfigurer)
-                // 配置未认证异常 401 时的认证端点 /login
-                .and().exceptionHandling((exceptions) -> exceptions.authenticationEntryPoint(
+            // 将所有暴露的端点匹配器设置到 httpSecurity 的安全过滤器的匹配器
+            .securityMatcher(endpointsMatcher)
+            // 开启 BearerTokenAuthenticationFilter 过滤器，校验请求里的 Bearer 令牌
+            // OIDC 的 /userinfo 端点需要基于 Bearer 令牌的身份认证
+            .oauth2ResourceServer(cfg -> cfg.jwt(jwtCfg -> {}))
+            .authorizeHttpRequests(authorize -> {
+                authorize.anyRequest().authenticated();
+            })
+            .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
+            // 配置未认证异常 401 时的认证端点 /login
+            .exceptionHandling((exceptions) -> exceptions.authenticationEntryPoint(
                     new LoginUrlAuthenticationEntryPoint("/login"))
-                );
+            )
+            // 应用本自定义配置 OAuth2AuthorizationServerConfigurer
+            .apply(serverConfigurer);
 
         return http.build();
     }
@@ -212,14 +212,19 @@ public class AuthorizationSecurityConfig {
             throws Exception {
         log.info("--- OAuth2 授权服务器自身的 HttpSecurity 自定义配置 ---");
         http
-                .csrf().disable()
-                .headers().frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin).and()
-                .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers(AntPathRequestMatcher.antMatcher("/h2/**")).permitAll()
-                        .requestMatchers("/favicon.ico", "/", "/errorPage", "/avatar/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .formLogin(Customizer.withDefaults());
+            .csrf(csrf -> csrf.disable())
+            .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+            .authorizeHttpRequests((authorize) -> authorize
+                    .requestMatchers(
+                        new AntPathRequestMatcher("/"),
+                        new AntPathRequestMatcher("/favicon.ico"),
+                        new AntPathRequestMatcher("/errorPage"),
+                        new AntPathRequestMatcher("/avatar/**")
+                    ).permitAll()
+                    .requestMatchers(PathRequest.toH2Console()).hasRole("ADMIN")
+                    .anyRequest().authenticated()
+            )
+            .formLogin(Customizer.withDefaults());
 
         log.info("--- OAuth2 授权服务器设置用户认证查询服务 ---");
         http.userDetailsService(userService);
