@@ -3,6 +3,7 @@ package io.github.reionchan.config;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -10,6 +11,8 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 /**
  * 客户端安全配置
@@ -61,7 +64,7 @@ public class ClientSecurityConfiguration {
                     res.sendRedirect("/user/info");
                 }))
                 // 激活 OAuth2 客户端支持
-                .oauth2Client(client -> {})
+                .oauth2Client(withDefaults())
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 // 忽略 OAuth2 客户端端点及一些静态资源的认证
                 .authorizeHttpRequests(httpReq -> httpReq

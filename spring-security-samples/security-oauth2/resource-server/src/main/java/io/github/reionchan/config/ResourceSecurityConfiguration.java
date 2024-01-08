@@ -12,6 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 /**
  * 资源服务安全配置
  *
@@ -62,7 +64,7 @@ public class ResourceSecurityConfiguration {
                 .formLogin(form -> form.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
                 // 启用资源服务器配置，并定制 JWT 令牌解析器配置，提供基于 Bearer JWT 的认证器
-                .oauth2ResourceServer(resServerConf -> resServerConf.jwt(jwt -> {}))
+                .oauth2ResourceServer(resServerConf -> resServerConf.jwt(withDefaults()))
                 // 使资源服务器变成无状态服务器
                 .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(httpReq -> { httpReq

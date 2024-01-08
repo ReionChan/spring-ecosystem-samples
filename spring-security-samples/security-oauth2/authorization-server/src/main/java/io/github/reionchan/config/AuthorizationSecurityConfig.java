@@ -48,6 +48,8 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.*;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 /**
  * 授权服务器安全配置
  *
@@ -129,7 +131,7 @@ public class AuthorizationSecurityConfig {
             .securityMatcher(endpointsMatcher)
             // 开启 BearerTokenAuthenticationFilter 过滤器，校验请求里的 Bearer 令牌
             // OIDC 的 /userinfo 端点需要基于 Bearer 令牌的身份认证
-            .oauth2ResourceServer(cfg -> cfg.jwt(jwtCfg -> {}))
+            .oauth2ResourceServer(cfg -> cfg.jwt(withDefaults()))
             .authorizeHttpRequests(authorize -> {
                 authorize.anyRequest().authenticated();
             })
@@ -224,7 +226,7 @@ public class AuthorizationSecurityConfig {
                     .requestMatchers(PathRequest.toH2Console()).hasRole("ADMIN")
                     .anyRequest().authenticated()
             )
-            .formLogin(Customizer.withDefaults());
+            .formLogin(withDefaults());
 
         log.info("--- OAuth2 授权服务器设置用户认证查询服务 ---");
         http.userDetailsService(userService);
