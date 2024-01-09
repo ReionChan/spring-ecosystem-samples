@@ -12,6 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 /**
  * 基于 DAO 操作的 Spring Security 配置
  *
@@ -143,23 +145,27 @@ public class DaoSecurityConfiguration {
     public SecurityFilterChain customizeSecurityFilterChain(HttpSecurity http, UserDetailsService userDetailsService) throws Exception {
         log.info("--- 对容器中自动装配的默认 HttpSecurity 进行定制化配置 ---");
         http
-                .csrf().disable()
-                // 将 H2 Console 网页地址排除权限验证 (目前使用 MvcMatcher 不行，只能使用 AntMatcher 原因：h2 console 非 servlet 项目)
-                .authorizeHttpRequests().requestMatchers(AntPathRequestMatcher.antMatcher("/h2/**")).permitAll()
+                .csrf(csrf -> csrf.disable())
                 // H2 Console 网页使用 Frame 排版，设置允许同源，默认 DENY (拒绝所有)
-                .and().headers().frameOptions(cfg -> cfg.sameOrigin()).and()
-                // 设置无需认证授权的资源
-                .authorizeHttpRequests().requestMatchers("/favicon.ico", "/", "/errorPage").permitAll()
+                .headers(headers -> headers.frameOptions(cfg -> cfg.sameOrigin()))
+                // 将 H2 Console 网页地址排除权限验证 (目前使用 MvcMatcher 不行，只能使用 AntMatcher 原因：h2 console 非 servlet 项目)
+                .authorizeHttpRequests(auth -> auth.requestMatchers(
+                        // 设置无需认证授权的资源
+                        AntPathRequestMatcher.antMatcher("/"),
+                        // org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console 自动装配的匹配器也同样使用 AntMatcher
+                        AntPathRequestMatcher.antMatcher("/h2/**"),
+                        AntPathRequestMatcher.antMatcher("/favicon.ico"),
+                        AntPathRequestMatcher.antMatcher("/errorPage")).permitAll()
                 // 设置具备管理员角色才能访问的资源路径
-                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers(AntPathRequestMatcher.antMatcher("/admin/**")).hasRole("ADMIN")
                 // 设置具备用户角色才能访问的资源路径
-                .requestMatchers("/user/**").hasAnyRole("ADMIN", "USER")
+                .requestMatchers(AntPathRequestMatcher.antMatcher("/user/**")).hasAnyRole("ADMIN", "USER")
                 // 除以上之外，其他资源需要认证后才能访问
-                .anyRequest().authenticated()
+                .anyRequest().authenticated())
                 // 定制登录及登录页面
-                .and().formLogin()
+                .formLogin(withDefaults())
                 // 设置默认的 HTTP 认证协议
-                .and().httpBasic();
+                .httpBasic(withDefaults());
 
         log.info("--- HttpSecurity 关联的 AuthenticationManagerBuilder 设置自定义的 userDetailsService ---");
         // 将自定义的 UserDetailsService 绑定到 httpSecurity 的 AuthenticationManagerBuilder

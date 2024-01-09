@@ -26,7 +26,7 @@ spring:
       settings:
         # 是否允许其他主机访问
         webAllowOthers: false
-        web-admin-password: admin
+        #web-admin-password: admin
 
   security:
     # 已采用数据库的同名 user 用户，覆盖此处配置

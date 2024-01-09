@@ -18,6 +18,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 /**
  * 基于 JWT 认证的无状态 Spring Security 配置
  *
@@ -87,22 +89,26 @@ public class JwtSecurityConfiguration {
         log.info("--- 对容器中自动装配的默认 HttpSecurity 进行定制化配置 ---");
         http
                 // 失效 CSRF
-                .csrf().disable()
+                .csrf(csrf -> csrf.disable())
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 // 配置 Session 管理，将 Session 生成策略该为无状态形式，不像服务器申请 JSESSIONID
                 // 配合内嵌 Servlet 服务器的 Session 跟踪设置为空，将彻底失效 JSESSIONID
                 // 配置属性：server.servlet.session.tracking-modes=
                 .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // 在 UsernamePasswordAuthenticationFilter 添加 JWT 认证过滤器
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests().requestMatchers(AntPathRequestMatcher.antMatcher("/h2/**")).permitAll()
-                .and().headers().frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin).and()
-                .authorizeHttpRequests().requestMatchers("/favicon.ico", "/", "/errorPage").permitAll()
-                // 除以上之外，其他资源需要认证后才能访问
-                .anyRequest().authenticated()
+                .authorizeHttpRequests(auth -> auth.requestMatchers(
+                        AntPathRequestMatcher.antMatcher("/"),
+                        AntPathRequestMatcher.antMatcher("/h2/**"),
+                        AntPathRequestMatcher.antMatcher("/favicon.ico"),
+                        AntPathRequestMatcher.antMatcher("/errorPage")).permitAll()
+                        // 除以上之外，其他资源需要认证后才能访问
+                        .anyRequest().authenticated()
+                )
                 // 定制登录成功后的处理器，设置 JwtAuthenticationTokenFilter 相关练得成功处理器
-                .and().formLogin().successHandler(filter.getSuccessHandler())
+                .formLogin(form -> form.successHandler(filter.getSuccessHandler()))
                 // 设置默认的 HTTP 认证协议
-                .and().httpBasic();
+                .httpBasic(withDefaults());
 
         log.info("--- HttpSecurity 关联的 AuthenticationManagerBuilder 设置自定义的 userDetailsService ---");
         // 将自定义的 UserDetailsService 绑定到 httpSecurity 的 AuthenticationManagerBuilder

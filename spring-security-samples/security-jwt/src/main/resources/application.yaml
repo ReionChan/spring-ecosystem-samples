@@ -41,7 +41,7 @@ spring:
       settings:
         # 是否允许其他主机访问
         webAllowOthers: false
-        web-admin-password: admin
+        #web-admin-password: admin
 
   # JPA 设置
   jpa:

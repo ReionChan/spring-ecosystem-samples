@@ -17,6 +17,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.sql.DataSource;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 /**
  * 基于 Jdbc 操作的 Spring Security 配置
  *
@@ -83,25 +85,27 @@ public class JdbcSecurityConfiguration {
     public SecurityFilterChain customizeSecurityFilterChain(HttpSecurity http, DataSource dataSource) throws Exception {
         logger.info("--- 对容器中自动装配的默认 HttpSecurity 进行定制化配置 ---");
         http
-                .csrf().disable()
-                // 将 H2 Console 网页地址排除权限验证 (目前使用 MvcMatcher 不行，只能使用 AntMatcher 原因：h2 console 非 servlet 项目)
-                .authorizeHttpRequests().requestMatchers(AntPathRequestMatcher.antMatcher("/h2/**")).permitAll()
-                // org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console 自动装配的匹配器也同样使用 AntMatcher
-                //.authorizeHttpRequests().requestMatchers("/h2/**").permitAll() // 此种形式不行
-                // H2 Console 网页使用 Frame 排版，设置允许同源，默认 DENY (拒绝所有)
-                .and().headers().frameOptions(cfg -> cfg.sameOrigin()).and()
-                // 设置无需认证授权的资源
-                .authorizeHttpRequests().requestMatchers("/favicon.ico", "/", "/errorPage").permitAll()
-                // 设置具备管理员角色才能访问的资源路径
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                // 设置具备用户角色才能访问的资源路径
-                .requestMatchers("/user/**").hasAnyRole("ADMIN", "USER")
-                // 除以上之外，其他资源需要认证后才能访问
-                .anyRequest().authenticated()
-                // 定制登录及登录页面
-                .and().formLogin()
-                // 设置默认的 HTTP 认证协议
-                .and().httpBasic();
+            .csrf(csrf -> csrf.disable())
+            // H2 Console 网页使用 Frame 排版，设置允许同源，默认 DENY (拒绝所有)
+            .headers(headers -> headers.frameOptions(cfg -> cfg.sameOrigin()))
+            // 将 H2 Console 网页地址排除权限验证 (目前使用 MvcMatcher 不行，只能使用 AntMatcher 原因：h2 console 非 servlet 项目)
+            .authorizeHttpRequests(auth -> auth.requestMatchers(
+                    // 设置无需认证授权的资源
+                    AntPathRequestMatcher.antMatcher("/"),
+                    // org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console 自动装配的匹配器也同样使用 AntMatcher
+                    AntPathRequestMatcher.antMatcher("/h2/**"),
+                    AntPathRequestMatcher.antMatcher("/favicon.ico"),
+                    AntPathRequestMatcher.antMatcher("/errorPage")).permitAll()
+                    // 设置具备管理员角色才能访问的资源路径
+                    .requestMatchers(AntPathRequestMatcher.antMatcher("/admin/**")).hasRole("ADMIN")
+                    // 设置具备用户角色才能访问的资源路径
+                    .requestMatchers(AntPathRequestMatcher.antMatcher("/user/**")).hasAnyRole("ADMIN", "USER")
+                    // 除以上之外，其他资源需要认证后才能访问
+                    .anyRequest().authenticated())
+            // 定制登录及登录页面
+            .formLogin(withDefaults())
+            // 设置默认的 HTTP 认证协议
+            .httpBasic(withDefaults());
 
         // 获取 HttpSecurity 关联的 AuthenticationManagerBuilder，向其中设置 UserDetailsService 并添加用户信息
         http.getSharedObject(AuthenticationManagerBuilder.class)

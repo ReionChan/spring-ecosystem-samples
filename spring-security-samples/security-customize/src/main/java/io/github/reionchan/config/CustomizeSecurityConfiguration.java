@@ -22,6 +22,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.util.stream.Collectors;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 /**
  * 自定义设置 Spring Security 配置
  *
@@ -134,18 +136,23 @@ public class CustomizeSecurityConfiguration {
         logger.info("--- 对容器中自动装配的默认 HttpSecurity 进行定制化配置 ---");
         http
                 // 设置无需认证授权的资源
-                .authorizeHttpRequests().requestMatchers("/favicon.ico", "/errorPage").permitAll()
                 // AntPathRequestMatcher vs MvcMatcher，结论：匹配行为基本一致，但是 MVC 类型匹配器关联校验了 MVC 映射相关，安全性更高
                 //.requestMatchers(AntPathRequestMatcher.antMatcher("/ant/**")).permitAll()
                 //.requestMatchers("/mvc/**").permitAll()
-                // 设置具备管理员角色才能访问的资源路径
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                // 设置具备用户角色才能访问的资源路径
-                .requestMatchers("/user/**").hasAnyRole("ADMIN", "USER")
-                // 除以上之外，其他资源需要认证后才能访问
-                .anyRequest().authenticated()
+                .authorizeHttpRequests(auth -> auth.requestMatchers(
+                    // 设置无需认证授权的资源
+                    AntPathRequestMatcher.antMatcher("/"),
+                    AntPathRequestMatcher.antMatcher("/favicon.ico"),
+                    AntPathRequestMatcher.antMatcher("/errorPage")).permitAll()
+                    // 设置具备管理员角色才能访问的资源路径
+                    .requestMatchers(AntPathRequestMatcher.antMatcher("/admin/**")).hasRole("ADMIN")
+                    // 设置具备用户角色才能访问的资源路径
+                    .requestMatchers(AntPathRequestMatcher.antMatcher("/user/**")).hasAnyRole("ADMIN", "USER")
+                    // 除以上之外，其他资源需要认证后才能访问
+                    .anyRequest().authenticated()
+                )
                 // 定制登录成功后根据角色进行页面跳转逻辑
-                .and().formLogin(loginConf ->
+                .formLogin(loginConf ->
                     loginConf.successHandler((req, res, auth) -> {
                         boolean isAdmin = auth.getAuthorities().stream().map(GrantedAuthority::getAuthority)
                                 .collect(Collectors.toSet()).contains("ROLE_ADMIN");
@@ -156,7 +163,7 @@ public class CustomizeSecurityConfiguration {
                         }
                     }))
                 // 设置默认的 HTTP 认证协议
-                .httpBasic();
+                .httpBasic(withDefaults());
 
         // 获取 HttpSecurity 关联的 AuthenticationManagerBuilder，向其中设置 UserDetailsService 并添加用户信息
         http.getSharedObject(AuthenticationManagerBuilder.class)
