@@ -1,0 +1,119 @@
+server:
+  # 设置服务器端口
+  port: 8081
+
+spring:
+  application:
+    # 应用名称设置
+    name: kafka-consumer
+
+  # === Kafka 配置 ===
+  kafka:
+    properties:
+      bootstrap-servers: localhost:9092
+      auto-offset-reset: latest
+      enable-auto-commit: true
+      auto.commit-interval: 1000
+      session.timeout.ms: 30000
+      key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+  # === Spring Cloud 配置 ===
+  cloud:
+    # --- 函数 Bean 定义 ---
+    function:
+      # 函数 Bean 定义
+      # 其中，gateway|functionRouter 为复合函数
+      definition: >
+        consumer1InCreateGrp;consumer2InCreateGrp;
+        oddPartitionConsumer;evenPartitionConsumer;
+        gateway|functionRouter
+
+      # 路由表达式设置
+      routing-expression: headers['routeKey']
+
+    # --- Spring Cloud Stream 配置 ---
+    stream:
+      # --- 函数配置 ---
+      function:
+        # --- 绑定别名映射 ---
+        bindings:
+          # 订单创建消费者函数映射别名
+          consumer1InCreateGrp-in-0: orderCreate1In
+          consumer2InCreateGrp-in-0: orderCreate2In
+          # 分区消费者函数映射别名
+          evenPartitionConsumer-in-0: evenPart1In
+          oddPartitionConsumer-in-0: oddPart1In
+          # 将复合函数的输入绑定映射别名
+          gatewayfunctionRouter-in-0: routeIn
+
+      # --- 绑定配置 ---
+      bindings:
+        # --- 不同分组的两个消费者 ---
+        # 它们同时消费相同分区的消息，即同一份消息被两个消费组的消费者消费
+        #
+        # 与 RabbitMQ 不同：
+        #
+        # 1. Kafka 同组消费者不能消费相同分区的消息
+        #    强行将同组消费者设置相同分区，只会有一个消费者被启用
+        #    如果该 Topic 有多分区，同组相同分区的消费者将被平衡分配到其他分区
+        # 2. Kafka 消费者可以消费不同分区的消息
+        orderCreate1In:
+          destination: order.create.msg
+          group: createGrp1
+        orderCreate2In:
+          destination: order.create.msg
+          group: createGrp2
+
+        # --- 分区形式的消费者 ---
+        evenPart1In:
+          destination: partitioned.msg
+          group: partGrp
+          consumer:
+            # 启用分区
+            partitioned: true
+            # 分区实例索引
+            instance-index: 0
+            # 服务实例数量
+            instance-count: 2
+        oddPart1In:
+          destination: partitioned.msg
+          group: partGrp
+          consumer:
+            partitioned: true
+            instance-index: 1
+            instance-count: 2
+
+        # --- 下游路由输入绑定 ---
+        routeIn:
+          # 绑定上游路由的输出地址
+          destination: routed.msg
+          group: downstreamGrp
+          # 自定义异常处理（与 DLX/DLQ 机制互斥）
+          #error-handler-definition: errorMessageConsumer
+          consumer:
+            retry-template-name: myRetryTemplate
+
+      # === Kafka 定制化配置 ===
+      kafka:
+        binder:
+          autoAddPartitions: false
+        bindings:
+          # --- Kafka 分区型消费者配置 ---
+          evenPart1In:
+            consumer:
+              # 关闭消费者自动平衡，激活 instance-index、instance-count 指定的分区消费者
+              auto-rebalance-enabled: false
+          oddPart1In:
+            consumer:
+              # 关闭消费者自动平衡，激活 instance-index、instance-count 指定的分区消费者
+              auto-rebalance-enabled: false
+          routeIn:
+            # Kafka 消费者可定制属性，参考：KafkaConsumerProperties
+            consumer:
+              # 开启 DLQ 功能
+              enable-dlq: true
+              # 设置 DLQ 主题
+              dlq-name: routed.msg.dlq
+              # 设置 DLQ 主题分区数量
+              dlq-partitions: 1

@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 @Slf4j
 @Configuration
 public class PartitionedConsumer {
+
     /**
      * 头部字段 partitionKey 进行分区
      * 消费 partitionKey=1 的奇数消息

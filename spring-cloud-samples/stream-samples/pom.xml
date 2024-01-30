@@ -22,6 +22,7 @@
     <modules>
         <module>stream-concept</module>
         <module>stream-rabbit</module>
+        <module>stream-kafka</module>
     </modules>
 
     <dependencyManagement>

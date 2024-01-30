@@ -1,29 +1,84 @@
-# Spring Cloud Stream with RabbitMQ Binder
+# Spring Cloud Stream with Kafka Binder
+
+## 项目依赖
+
+* Zookeeper
+    * 版本：3.6.4 (Kafka 内置)
+    * 启动命令
+      ```sh
+      # 假定 kafka 主目录为 kafka_home
+      $kafka_home/bin/zookeeper-server-start.sh ./config/zookeeper.properties
+      ```
+
+* Kafka
+  * 版本：kafka_2.13-3.4.1
+  * 启动命令
+      ```sh
+      # 假定 kafka 主目录为 kafka_home（单实例启动）
+      $kafka_home/bin/kafka-server-start.sh ../config/server.properties
+      ```
+
+* Kafka UI （一款 Kafka 可视化 Web 控制台，可选）
+
+    * [下载地址](https://github.com/provectus/kafka-ui)
+
+    * 版本：0.7.1
+
+    * 启动命令
+
+        ```sh
+        java -Dspring.config.additional-location=kafka-ui.yml  -jar ./kafka-ui-api-v0.7.1.jar
+        ```
+
+        kafka-ui.yml 配置文件：
+
+        ```yml
+        kafka:
+          clusters:
+            -
+              name: local
+              bootstrapServers: localhost:9092
+              #schemaRegistry: http://localhost:8085
+              #schemaRegistryAuth:
+                #username: username
+                #password: password
+        #     schemaNameTemplate: "%s-value"
+              #metrics:
+                #port: 9997
+                #type: JMX
+        ```
+
+        该工具可以取代命令行形式查看 Kafka 中创建的主题及消费者分区等信息，不过下文还是使用命令行形式查看。
+
+        启动成功后，访问：`http://localhost:8080`
+
 
 ## 项目介绍
 
-* rabbit-producer 消息生产者（上游服务）
-  * 应用名称：rabbit-producer
-  * 应用端口：8080
-* rabbit-consumer 消息消费者（下游服务）
-  * 应用名称：rabbit-consumer
+* kafka-producer 消息生产者（上游服务）
+  * 应用名称：kafka-producer
+  * 应用端口：8082
+* kafka-consumer 消息消费者（下游服务）
+  * 应用名称：kafka-consumer
   * 应用端口：8081
-* RabbitMQ 消息服务
-  * 端口：5672
-  * 账户及密码：guest/guest
+* zookeeper 服务
+  zookeeper 采用 kafka 
+  * 端口：2181
+* kafka 服务
+  * 端口：9092
 
 ## 应用交互
 
 ```txt
 
-  PRODUCER                              RABBITMQ                            CONSUMER
+  PRODUCER                              kafkaMQ                            CONSUMER
 ╔═══════════╗                        ╔═══════════╗                   ╔═══════════════════════════╗
-║           ║   === OUTPUT ===>      ║           ║  === INPUT ===>   ║╭┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈╮    ║
-║           ╚════════════════════════╝           ╚═══════════════════╝╯consumer1InCreateGrp ┆    ║
-║                              order.create.msg.createGrp                                   ┆    ║
-║           ╔════════════════════════╗           ╔═══════════════════╗╮consumer2InCreateGrp ┆    ║
-║           ║                        ║           ║                   ║╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈╯    ║
-║           ║                        ║           ║                   ║       createGrp           ║
+║           ║   === OUTPUT ===>      ║           ║  === INPUT ===>   ║   createGrp1              ║
+║           ╚════════════════════════╝           ╚═══════════════════╝╭->  consumer1InCreateGrp  ║
+║                              order.create.msg.createGrp  -----------┤                          ║
+║           ╔════════════════════════╗           ╔═══════════════════╗┆   createGrp2             ║
+║           ║                        ║           ║                   ║╰->   consumer2InCreateGrp ║
+║           ║                        ║           ║                   ║                           ║
 ║           ║                        ║           ║                   ║                           ║
 ║           ╚════════════════════════╝           ╚═══════════════════╝╭┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈╮   ║
 ║                               partitioned.msg.partGrp-0             ╯evenPartitionConsumer ║   ║
@@ -35,12 +90,12 @@
 ║           ║                        ║           ║                   ║                           ║
 ║           ╚════════════════════════╝           ╚═══════════════════╝                           ║
 ║                                                              ╭----->  gateway|functionRouter   ║
-║ functionRouter ---[routeKey]---> routed.msg.downstreamGrp ---╯                      ┆          ║
+║ functionRouter ---[routeKey]---> routed.msg -----------------╯                      ┆          ║
 ║                                          ┆                         [routeKey] <-----╯          ║
 ║                                          ┆ DLX   ╭┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈╮<╯ ╰>╭┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈╮  ║
 ║                                          ┆       ┆evenRoutedConsumer┆     ┆oddRoutedConsumer┆  ║
 ║                                          ↓       ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈╯     ╰┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈╯  ║
-║                            routed.msg.downstreamGrp.dlq ------------------╮  ╭┈┈┈┈┈┈┈┈╮        ║
+║                                 routed.msg.dlq ---------------------------╮  ╭┈┈┈┈┈┈┈┈╮        ║
 ║           ╔════════════════════════╗           ╔═══════════════════╗      ╰> ┆ logDlq ┆        ║
 ║           ║                        ║           ║                   ║         ╰┈┈┈┈┈┈┈┈╯        ║
 ╚═══════════╝                        ╚═══════════╝                   ╚═══════════════════════════╝
@@ -52,7 +107,7 @@
 
 ### 消息分组
 
-#### 生产者端（rabbit-producer）
+#### 生产者端（kafka-producer）
 
 1. 配置
 
@@ -61,28 +116,40 @@
      cloud:
        stream:
          bindings:
-           # 分组输出绑定名
+           # 分组输出绑定
            groupOut:
-             # 绑定目标地址
-             destination: order.create.msg
-             producer:
-               # 支持多个分组，同一消息将会路由到所有分组
-               # 同组的多个消费者共享同组的消息，一条消息只被该消费分组的一个消费者获取
-               # 同一消息路由到不同分组，将被不同分组的消费者用来实现不同功能
-               # 例如：此订单创建分组外，再设置一个 createLogGrp 分组
-               #      除创建订单的消费者消费消息来创建订单外，另一分组获得该消息后只用作记录日志
-               required-groups:
-                 - createGrp
-                 #- createLogGrp
+            # 绑定目标地址
+            destination: order.create.msg
+            producer:
+              partition-count: 1
+              # 支持多个分组，同一消息将会路由到所有分组
+              #
+              # 与 RabbitMQ 不同：
+              #
+              # 1. Kafka 同组消费者不能消费相同分区的消息
+              #    强行将同组消费者设置相同分区，只会有一个消费者被启用
+              #    如果该 Topic 有多分区，同组相同分区的消费者将被平衡分配到其他分区
+              # 2. Kafka 消费者可以消费不同分区的消息
+              #
+              # 同一消息路由到不同分组，将被不同分组的消费者用来实现不同功能
+              # 例如：createGrp1 用来处理订单创建
+              #      createGrp2: 用来记录订单创建日志
+              required-groups:
+                - createGrp1
+                - createGrp2
    ```
 
-   &emsp;&emsp; 就 RabbitMQ  而言，此配置将会创建出名为 `order.create.msg` 的 **Exchange 交换机**，并且将名为 `order.create.msg.createGrp` 的 **Queue 队列** 绑定到该交换机。生产类通过向绑定名为 `groupOut` 的 **Binding 绑定** 发送消息，将被交换机路由到绑定的队列中。默认情况下，交换机为 Topic 类型，绑定到该交换机的队列的 **BindingKey 绑定键** 为 **#**，即通配所有 **RoutingKey 路由键**。
+   &emsp;&emsp; 就 Kafka  而言，此配置将会创建出名为 `order.create.msg` 的 **Topic 主题**：
 
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/exchanges-group.png?raw=true)
+   ```sh
+   # 显示主题命令
+   kafka-topics.sh --bootstrap-server localhost:9092 --topic "order.create.msg" --describe
+   
+   Topic: order.create.msg	TopicId: _yIXi_R1RhGQ4eFedViqfQ	PartitionCount: 1	ReplicationFactor: 1	Configs: 
+   	Topic: order.create.msg	Partition: 0	Leader: 0	Replicas: 0	Isr: 0
+   ```
 
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/queue-group.png?raw=true)
-
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/binding-group.png?raw=true)
+   
 
 2. 生产类
 
@@ -113,7 +180,7 @@
    curl -X POST -d 'name=order' localhost:8080/order/create
    ```
 
-#### 消费者端（rabbit-consumer）
+#### 消费者端（kafka-consumer）
 
 1. 配置
 
@@ -129,17 +196,40 @@
              consumer2InCreateGrp-in-0: orderCreate2In
          # --- 绑定配置 ---
          bindings:
-           # --- 相同分组的两个消费者 ---
-           # 它们共享 createGrp 分组内的消息，默认是轮询方式轮流交替获得消息
+           # --- 不同分组的两个消费者 ---
+           # 它们同时消费相同分区的消息，即同一份消息被两个消费组的消费者消费
+           #
+           # 与 RabbitMQ 不同：
+           #
+           # 1. Kafka 同组消费者不能消费相同分区的消息
+           #    强行将同组消费者设置相同分区，只会有一个消费者被启用
+           #    如果该 Topic 有多分区，同组相同分区的消费者将被平衡分配到其他分区
+           # 2. Kafka 消费者可以消费不同分区的消息
            orderCreate1In:
              destination: order.create.msg
-             group: createGrp
+             group: createGrp1
            orderCreate2In:
              destination: order.create.msg
-             group: createGrp
+             group: createGrp2
    ```
 
-   &emsp;&emsp; 这里配置在同一分组 `createGrp` 中的两个消费者：`orderCreate1In`、`orderCreate2In`, 它们对应下面消费类中的两个 **Consumer** 函数 Bean。它们消费来自于 `order.create.msg` 地址的消息。 值得注意的是，函数式消费者默认绑定名称格式为：`functionName-in-index`，为了更简洁的使用，使用了 `spring.cloud.stream.function.bindings` 属性配置对函数式的绑定进行别名设置。
+   &emsp;&emsp; 这里配置在两个分组 `createGrp1`、 `createGrp2` 中的消费者：`orderCreate1In`、`orderCreate2In`, 它们对应下面消费类中的两个 **Consumer** 函数 Bean。它们消费来自于 `order.create.msg` 地址的消息（同一份消息被这两个消费者同时读取）。 值得注意的是，函数式消费者默认绑定名称格式为：`functionName-in-index`，为了更简洁的使用，使用了 `spring.cloud.stream.function.bindings` 属性配置对函数式的绑定进行别名设置。
+
+   
+
+   ```sh
+   # 分组 createGrp1 详情
+   ./kafka-consumer-groups.sh --bootstrap-server localhost:9092 --group createGrp1 --describe --members --verbose
+   GROUP           CONSUMER-ID                                                HOST            CLIENT-ID             #PARTITIONS     ASSIGNMENT
+   createGrp1      consumer-createGrp1-2-3c727b9f-f163-4c99-bfb3-7df9138ddde4 /127.0.0.1      consumer-createGrp1-2 1               order.create.msg(0)
+   
+   # 分组 createGrp2 详情
+   ./kafka-consumer-groups.sh --bootstrap-server localhost:9092 --group createGrp2 --describe --members --verbose
+   GROUP           CONSUMER-ID                                                HOST            CLIENT-ID             #PARTITIONS     ASSIGNMENT
+   createGrp2      consumer-createGrp2-4-bf6f3aa8-dcf9-433e-a01d-5e4fabf181f0 /127.0.0.1      consumer-createGrp2-4 1               order.create.msg(0)
+   ```
+
+   
 
    
 
@@ -150,28 +240,28 @@
    public class GroupedConsumer {
    
        /**
-        * createGrp 分组消费者 1，接收订单创建消息
+        * createGrp1 分组消费者，接收订单创建消息
         */
        @Bean
        public Consumer<String> consumer1InCreateGrp() {
-           return name -> log.info("Consumer one receive a order, name is : {}", name);
+           return msg -> log.info("Group one receive a order, name is : {}", msg);
        }
    
        /**
-        * createGrp 分组消费者 2，接收订单创建消息
+        * createGrp2 分组消费者，接收订单创建消息
         */
        @Bean
        public Consumer<String> consumer2InCreateGrp() {
-           return name -> log.info("Consumer two receive a order, name is : {}", name);
+           return msg -> log.info("Group two receive a order, name is : {}", msg);
        }
    }
    ```
 
-   这两个消费者默认将轮流消费队列中的消息，即它们共享同一个队列中消息。
+   这两个消费者将同时消费主题 `order.create.msg` 下的所有消息。
 
 ### 消息分区
 
-#### 生产者端（rabbit-producer）
+#### 生产者端（kafka-producer）
 
 1. 配置
 
@@ -203,17 +293,15 @@
                required-groups: partGrp
    ```
 
-   &emsp;&emsp;此处配置名称为 `partOut` 的绑定，它绑定名称为 `partitioned.msg` 的 **Exchange 交换机**。在生产者属性中设置 2 个分区，分区 SpEL 表达式：`headers['partitionKey'] % 2`，即根据消息头中的 `partitioniKey` 与 2 取模运算的结果当做分区索引。指定消费者需要属于 `partGrp` 分组才能消费分区队列中的消息。
+   &emsp;&emsp;此处配置名称为 `partOut` 的绑定，它绑定名称为 `partitioned.msg` 的 **Topic 主题**。在生产者属性中设置 2 个分区，分区 SpEL 表达式：`headers['partitionKey'] % 2`，即根据消息头中的 `partitioniKey` 与 2 取模运算的结果当做分区索引。指定消费者需要属于 `partGrp` 分组才能消费分区队列中的消息。
 
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/exchanges-partition.png?raw=true)
-
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/queue-partition.png?raw=true)
-
-   &emsp;&emsp; 生成两个分区队列，默认命名规则为：`exchangeName.groupName-index`，即分区交换机名.组名-分区索引。
-
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/binding-partition.png?raw=true)
-
-   &emsp;&emsp;交换机下绑定两个分区队列，它们的路由键默认规则为：`exchangeName-index`，即分区交换机名.分区索引。
+   ```sh
+   # 查看分区型主题，可以看到两个分区
+   ./kafka-topics.sh --bootstrap-server localhost:9092 --topic "partitioned.msg" --describe
+   Topic: partitioned.msg	TopicId: WDqlWwYGQU6Pj5vI9yMDTA	PartitionCount: 2	ReplicationFactor: 1	Configs: 
+   	Topic: partitioned.msg	Partition: 0	Leader: 0	Replicas: 0	Isr: 0
+   	Topic: partitioned.msg	Partition: 1	Leader: 0	Replicas: 0	Isr: 0
+   ```
 
    
 
@@ -244,7 +332,7 @@
 
    
 
-#### 消费者端（rabbit-consumer）
+#### 消费者端（kafka-consumer）
 
 1. 配置
 
@@ -261,28 +349,57 @@
    
          # --- 绑定配置 ---
          bindings:
-           # --- 分区形式的消费者 ---
-           
-           # 消费者1：消息长度为偶数的分区消费者
+           # 偶数分区消费者1
            evenPart1In:
              destination: partitioned.msg
              group: partGrp
              consumer:
                # 启用分区
                partitioned: true
-               # 分区实例索引
+               # 分区实例索引，本实例消费该主题下的 0 号分区
                instance-index: 0
+               # 服务实例数量，这里一定要设置该主题下实例的总数，每个分区1个实例，总共2分区，故为 2
+               instance-count: 2
                
-           # 消费者2：消息长度为奇数的分区消费者    
+           # 奇数分区消费者2
            oddPart1In:
              destination: partitioned.msg
              group: partGrp
              consumer:
                partitioned: true
+               # 分区实例索引，本实例消费该主题下的 1 号分区
                instance-index: 1
+               # 服务实例数量，这里一定要设置该主题下实例的总数，每个分区1个实例，总共2分区，故为 2
+               instance-count: 2
+   
+         # === Kafka 定制化配置 ===
+         kafka:
+           bindings:
+             # --- Kafka 分区型消费者配置 ---
+             evenPart1In:
+               consumer:
+                 # 关闭消费者自动平衡，激活 instance-index、instance-count 指定的分区消费者
+                 auto-rebalance-enabled: false
+             oddPart1In:
+               consumer:
+                 # 关闭消费者自动平衡，激活 instance-index、instance-count 指定的分区消费者
+                 auto-rebalance-enabled: false
    ```
 
-   &emsp;&emsp;定义两个分区消费者，它们分别消费消息长度为奇数、偶数的消息。注意消费属性配置 `partitioned: true` 将使得消费者成为分区消费者，而 `instance-index` 所设置的值将决定它所消费的目标分区（交换机的路由键会使用分区索引构建，而该索引与该实例索引对应）。
+   &emsp;&emsp;定义两个分区消费者，它们分别消费消息长度为奇数、偶数的消息。注意消费属性配置 `partitioned: true` 将使得消费者成为分区消费者，而 `instance-index` 所设置的值将决定它所消费的目标分区。
+
+   
+
+   ```sh
+   # 采用自定义指定分区时，此处会提示没有活动的 members, 但是不会影响程序的执行
+   ./kafka-consumer-groups.sh --bootstrap-server localhost:9092 --group partGrp --describe
+   
+   Consumer group 'partGrp' has no active members.
+   
+   GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID     HOST            CLIENT-ID
+   partGrp         partitioned.msg 0          1               1               0               -               -               -
+   partGrp         partitioned.msg 1          1               1               0               -               -               -
+   ```
 
    
 
@@ -317,7 +434,7 @@
 
 ### 消息路由
 
-#### 生产者端（rabbit-producer）
+#### 生产者端（kafka-producer）
 
 1. 配置
 
@@ -335,50 +452,24 @@
              destination: routed.msg
              producer:
                required-groups: downstreamGrp
+   ```
    
-         # === RabbitMQ 定制化配置 ===
-         rabbit:
-           bindings:
-             groupOut:
-               # Rabbit 生产者可定制属性，参考：RabbitProducerProperties
-               producer:
-                 # 绑定交换机类型，默认 topic
-                 exchange-type: topic
-             routeOut:
-               producer:
-                 # 自动绑定 DLQ，生产方与消费方需要配置一致
-                 auto-bind-dlq: true
+   &emsp;&emsp; 此处通过属性 `spring.cloud.function.routing-expression` 激活 Spring Cloud Stream 内置的 **RoutingFunction** 具备网关或路由特性的函数式 Bean，它的其中一项能力就是将这个路由表达式解析后的返回值当做路由键值，从而将消息路由到与路由键匹配的消费者。此处的路由表达式：`headers['routeNum'] % 2 == 0 ? 'even2RouteOut' : 'odd2RouteOut'`，即解析消息头中的 `routeNum` 字段值的奇偶性动态路由到 `even2RouteOut` 或 `odd2RouteOut`, 而这两个字符串是定义在容器中的函数式消费者的 Bean 名称，由它即可关联对应的函数处理消息。
+   
+   &emsp;&emsp;在本示例中，经过路由的消息最终被路由到 `even2RouteOut` 或 `odd2RouteOut` 本地函数式消费者，由它们将消息通过 `routeOut` 输出绑定发送到名为 `routed.msg` 的主题，从而使得下游加入到 `downstreamGrp` 分组的消费者接收该消息。至于消息则是由下面的 **Controller** 请求产生后直接交给容器中的 **RoutingFunction** 进行路由。
+   
+   
+   
+   ```sh
+   # routed.msg 主题
+   ./kafka-topics.sh --bootstrap-server localhost:9092 --topic "routed.msg" --describe
+   Topic: routed.msg	TopicId: mnyPVDFSRW6-lODH9np2kA	PartitionCount: 1	ReplicationFactor: 1	Configs: 
+   	Topic: routed.msg	Partition: 0	Leader: 0	Replicas: 0	Isr: 0
    ```
 
-   &emsp;&emsp; 此处通过属性 `spring.cloud.function.routing-expression` 激活 Spring Cloud Stream 内置的 **RoutingFunction** 具备网关或路由特性的函数式 Bean，它的其中一项能力就是将这个路由表达式解析后的返回值当做路由键值，从而将消息路由到与路由键匹配的消费者。此处的路由表达式：`headers['routeNum'] % 2 == 0 ? 'even2RouteOut' : 'odd2RouteOut'`，即解析消息头中的 `routeNum` 字段值的奇偶性动态路由到 `even2RouteOut` 或 `odd2RouteOut`, 而这两个字符串是定义在容器中的函数式消费者的 Bean 名称，由它即可关联对应的函数处理消息。
-
-   &emsp;&emsp;在本示例中，经过路由的消息最终被路由到 `even2RouteOut` 或 `odd2RouteOut` 本地函数式消费者，由它们将消息通过 `routeOut` 输出绑定发送到名为 `routed.msg` 的交换机，从而使得下游加入到 `downstreamGrp` 分组的消费者接收该消息。至于消息则是由下面的 **Controller** 请求产生后直接交给容器中的 **RoutingFunction** 进行路由。
-
-   &emsp;&emsp;此外，消息在上游发送到下游所关联的交换机 `routed.msg` 增加了对 Dead Letter（死信，无法路由的消息） 的处理，而 RabbitMQ 对死信的一种方式是将它路由到与交换机绑定的 **DLQ（死信队列）**中。该特性属于特定中间件独有的配置，Spring Cloud Stream 目前官方支持的两个消息中间件 RabbitMQ、Kafka 分别在属性 `spring.cloud.stream.rabbit`、`spring.cloud.stream.kafka` 中进行配置。此处激活自动绑定死信队列的配置由 `auto-bind-dlq: true` 来实现。值得注意的是，下游与该交换机绑定的消费者也同样需要设置改属性，否则生产者消费者所关联的交换机属性配置不一致将会导致异常。
-
    
 
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/exchanges-route.png?raw=true)
-
-   &emsp;&emsp;交换器 `routed.msg` 有关联的 处理死信的交换器 `DLX`，而名称为 `functionRouter-in-0` 的交换机是由上游激活的 **RoutingFunction** 的输入参数绑定的交换器，名称为 `gatewayfunctionRouter-out-0` 的交换器则是下游激活的 **RoutingFunction** 与 `gateway` 复合函数的输出绑定的交换器。
-
-   
-
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/queue-route.png?raw=true)
-
-   &emsp;&emsp;队列 `routed.msg.downstreamGrp` 是一个具备 DLX（死信交换机）、DLK（死信路由键）特性的队列，而 `routed.msg.downstreamGrp.dlq` 则是与 `routed.msg` 交换机关联的死信交换机 `DLX`  所绑定的队列，`routed.msg.downstreamGrp.parkingLot` 则是自定义处理死信队列的消费者消费完成后最终死信所保存的位置。
-
-   
-
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/binding-route.png?raw=true)
-
-   `routed.msg` 交换机的队列绑定关系。
-
-   
-
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/binding-route-dlq.png?raw=true)
-
-   `DLX` 交换机的队列绑定关系，可以看到该交换机被绑定的队列为正常消费队列后缀 **.dlq** 来命名，绑定的路由键即为交换机的全名。
+   &emsp;&emsp;此外，消息在上游发送到下游所关联的主题 `routed.msg` 增加了对 Dead Letter（死信，无法路由的消息） 的处理，而 kafka 对死信的一种方式是将它路由到 **DLQ 死信主题**中。该特性属于特定中间件独有的配置，Spring Cloud Stream 目前官方支持的两个消息中间件 kafkaMQ、Kafka 分别在属性 `spring.cloud.stream.rabbit`、`spring.cloud.stream.kafka` 中进行配置，具体参考消费端配置。
 
    
 
@@ -469,7 +560,7 @@
 
    
 
-#### 消费者端（rabbit-consumer）
+#### 消费者端（kafka-consumer）
 
 1. 配置
 
@@ -505,14 +596,18 @@
              consumer:
                retry-template-name: myRetryTemplate
    
-         # === RabbitMQ 定制化配置 ===
-         rabbit:
+         # === Kafka 定制化配置 ===
+         kafka:
            bindings:
              routeIn:
-               # Rabbit 消费者可定制属性，参考：RabbitConsumerProperties
+               # Kafka 消费者可定制属性，参考：KafkaConsumerProperties
                consumer:
-                 # 自动绑定 DLQ，生产方与消费方需要配置一致
-                 auto-bind-dlq: true
+                 # 开启 DLQ 功能
+                 enable-dlq: true
+                 # 设置 DLQ 主题
+                 dlq-name: routed.msg.dlq
+                 # 设置 DLQ 主题分区数量
+                 dlq-partitions: 1
    ```
 
    &emsp;&emsp;首先，该下游消费者也通过 `routing-expression` 属性配置激活 **RoutingFunction** 具备网关路由功能的函数式 Bean，它解析传递给它的消息中的消息头的 `routeKey` 的值，动态将消息路由到值对应的函数式 Bean 名称的方法处理。值得注意的是，该网关路由函数式 Bean 接收的消息不再像上游的生产端那样，直接通过调用它的消息处理方法，而是通过复合函数的形式 `gateway|functionRouter` 进行定义，即：该路由函数接收 `gateway` 函数的输出消息。
@@ -527,13 +622,30 @@
 
    - 利用 DLQ 机制
 
-     该机制需在 RabbitMQ  定制化属性配置中，将消费者关联的交换机启用自动绑定 DLQ 的属性 `auto-bind-dlq: true`
+     该机制需在 kafka  定制化属性配置中，将消费者关联的交换机启用自动绑定 DLQ 的属性 `auto-bind-dlq: true`，同时需要指定 DLQ 的主题名称及该主题所需的分区数量，否则 Spring Cloud Stream 将不会进行 DLQ 主题的创建。
 
    &emsp;&emsp;注意，这两种异常处理是互斥的，两个都配置时，只有一种会生效。
 
    &emsp;&emsp;最后，消费出现异常时默认会开启 3 次重试操作，如果想针对具体消费者单独定制重试配置，可以在其绑定设置的消费配置中设置
 
     `retry-template-name` 属性，它的值是被注解 **@StreamRetryTemplate** 修饰的自定义 **RetryTemplate** Bean 的名称，通过它可以定制重试次数、重试策略、注册自定义重试监听器等操作。
+
+   
+
+   ```sh
+   # 下游消费者分组
+   ./kafka-consumer-groups.sh --bootstrap-server localhost:9092 --group "downstreamGrp"  --describe
+   GROUP           TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG             CONSUMER-ID                                                    HOST            CLIENT-ID
+   downstreamGrp   routed.msg      0          2               2               0               consumer-downstreamGrp-10-86c7b759-a154-4650-968d-b185a708920f /127.0.0.1      consumer-downstreamGrp-10
+   
+   # routed.msg 主题对应的 DLQ routed.msg.dlq
+   ./kafka-topics.sh --bootstrap-server localhost:9092 --topic "routed.msg.dlq" --describe                                                                                         130 ↵ ──(二, 130)─┘
+   Topic: routed.msg.dlq	TopicId: ryZGuYv5R9qzXT29yjPCkw	PartitionCount: 1	ReplicationFactor: 1	Configs: 
+   	Topic: routed.msg.dlq	Partition: 0	Leader: 0	Replicas: 0	Isr: 0
+   
+   ```
+
+   
 
    
 
@@ -582,49 +694,40 @@
    @Configuration
    public class RouteInDlqConsumer {
    
-       private static final String ORIGINAL_QUEUE = "routed.msg.downstreamGrp";
-       private static final String DLQ = ORIGINAL_QUEUE + ".dlq";
-       private static final String PARKING_LOT = ORIGINAL_QUEUE + ".parkingLot";
-   
-       @Resource
-       private RabbitTemplate rabbitTemplate;
+       private static final String ORIGINAL_TOPIC = "routed.msg";
+       private static final String DLQ = ORIGINAL_TOPIC + ".dlq";
    
        /**
-        * 处理 RabbitMQ DLQ 中的失败消息
+        * 处理 Kafka DLQ 中的失败消息
         */
-       @RabbitListener(queues = DLQ)
-       public void logDlq(Message failedMessage) {
+       @KafkaListener(topics = DLQ, groupId = "downstreamGrp")
+       public void logDlq(Object failedMessage) {
            // 打印失败消息
-           logMessage(failedMessage, false);
-           // 将消息放入 parkingLot 队列
-           this.rabbitTemplate.send(PARKING_LOT, failedMessage);
+           logMessage((ConsumerRecord) failedMessage, false);
        }
    
-       @Bean
-       public Queue parkingLot() {
-           return new Queue(PARKING_LOT);
-       }
-   
-       private static void logMessage(Message message, boolean isPrintStacktrace) {
+       private static void logMessage(ConsumerRecord<byte[], byte[]> message, boolean isPrintStacktrace) {
            try {
-               Map<String, Object> headers = message.getMessageProperties().getHeaders();
-               String payload = new String(message.getBody(), Charset.defaultCharset());
+               RecordHeaders headers = (RecordHeaders) message.headers();
+               String payload = new String(message.value(), Charset.defaultCharset());
                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-               String timestamp = formatter.format(message.getMessageProperties().getTimestamp());
+               String timestamp = formatter.format(new Date(message.timestamp()));
    
                StringBuffer strBuffer = new StringBuffer();
                strBuffer.append("\nMessage Properties:\n");
-               strBuffer.append('\t').append("messageId").append(" : ").append(message.getMessageProperties().getMessageId()).append("\n");
+               strBuffer.append('\t').append("messageTopic").append(" : ").append(message.topic()).append("\n");
                strBuffer.append('\t').append("timestamp").append(" : ").append(timestamp).append("\n");
-               strBuffer.append('\t').append("priority").append(" : ").append(message.getMessageProperties().getPriority()).append("\n");
    
                strBuffer.append("Message Headers:\n");
-               for (String key : headers.keySet()) {
-                   if (key.equals("x-exception-stacktrace") && !isPrintStacktrace) {
+               Iterator<Header> iterable = headers.iterator();
+               while(iterable.hasNext()) {
+                   Header header = iterable.next();
+                   if (header.key().equals("x-exception-stacktrace") && !isPrintStacktrace) {
                        continue;
                    }
-                   strBuffer.append('\t').append(key).append(" : ").append(headers.get(key)).append("\n");
+                   strBuffer.append('\t').append(header.key()).append(" : ").append(header.value()).append("\n");
                }
+   
                strBuffer.append("Message Payload:\n\t" + payload + "\n");
    
                log.info("\n\n=== DEAD LETTER INFO ===\n{}", strBuffer.toString());
@@ -634,13 +737,11 @@
        }
    }
    ```
-
-   &emsp;&emsp;读取 DLQ 中的死信，打印死信内容后将其转移到 `routed.msg.downstreamGrp.parkingLog` 队列中。
-
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/dlq-msg.png?raw=true)
-
    
-
+   &emsp;&emsp;读取 DLQ 中的死信，打印死信内容，实际应用中可以在此进行死信的补偿操作。
+   
+   
+   
 4. 自定义异常处理类
 
    ```java
@@ -697,6 +798,6 @@
    }
    ```
 
-   设置自定义重试监听器后，每当发生重试时将会打印如下消息：
+   设置自定义重试监听器后，每当发生重试时将会打印重试消息。
 
-   ![](https://github.com/ReionChan/spring-ecosystem-samples/blob/main/spring-cloud-samples/stream-samples/stream-rabbit/img/retry-log.png?raw=true)
+   

@@ -1,0 +1,83 @@
+server:
+  # 设置服务器端口
+  port: 8082
+
+spring:
+  application:
+    # 应用名称设置
+    name: kafka-producer
+
+  # === Kafka 配置 ===
+  # 参考：KafkaProperties
+  kafka:
+    properties:
+      bootstrap-servers: localhost:9092
+      auto-offset-reset: latest
+      enable-auto-commit: true
+      auto.commit-interval: 1000
+      session.timeout.ms: 30000
+      key.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value.deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+  # === Spring Cloud 配置 ===
+  cloud:
+    function:
+      # 表达式返回的函数 Bean 名称必须在本容器中有定义
+      #definition:
+      # 路由表达式设置
+      routing-expression: "headers['routeNum'] % 2 == 0 ? 'even2RouteOut' : 'odd2RouteOut'"
+
+    # --- Spring Cloud Stream 配置 ---
+    stream:
+      # === 函数 ===
+      function:
+        # --- 绑定别名映射 ---
+        # 将函数式 Bean 输出输入通道默认绑定名映射成简单的名称
+        # 例如：foo-in-0: fooIn
+        #      bar-out-0: barOut
+        bindings:
+          # 分区的绑定名称包含 '.'，使用 "[]" 转义
+          "[partitioned.msg]": partOut
+
+      # === 绑定 ===
+      bindings:
+        # 分组输出绑定
+        groupOut:
+          # 绑定目标地址
+          destination: order.create.msg
+          producer:
+            partition-count: 1
+            # 支持多个分组，同一消息将会路由到所有分组
+            #
+            # 与 RabbitMQ 不同：
+            #
+            # 1. Kafka 同组消费者不能消费相同分区的消息
+            #    强行将同组消费者设置相同分区，只会有一个消费者被启用
+            #    如果该 Topic 有多分区，同组相同分区的消费者将被平衡分配到其他分区
+            # 2. Kafka 消费者可以消费不同分区的消息
+            #
+            # 同一消息路由到不同分组，将被不同分组的消费者用来实现不同功能
+            # 例如：createGrp1 用来处理订单创建
+            #      createGrp2: 用来记录订单创建日志
+            required-groups:
+              - createGrp1
+              - createGrp2
+
+        # 分区输出绑定
+        partOut:
+          # 不设置，默认与绑定名称一致
+          destination: partitioned.msg
+          # 设置生产者分区属性
+          producer:
+            # 分区数量
+            partition-count: 2
+            # 分区表达式
+            partition-key-expression: headers['partitionKey'] % 2
+            # 所需分区组
+            required-groups: partGrp
+
+        # 路由输出绑定
+        routeOut:
+          destination: routed.msg
+          producer:
+            required-groups: downstreamGrp
