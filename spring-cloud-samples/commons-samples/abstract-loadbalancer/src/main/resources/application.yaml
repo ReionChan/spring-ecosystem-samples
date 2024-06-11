@@ -37,13 +37,17 @@ spring:
         weight: 8
         # 设置此实例是否是临时性（此处设置为 false，即 persistent 永久性，才会生成 instanceId）
         # 更改为 false 后，如果启动服务报错，请参考 https://zhuanlan.zhihu.com/p/571875080
+        # 强行删除永久实例命令：
+        # curl -X DELETE http://127.0.0.1:8848/nacos/v1/ns/instance?serviceName=loadbalancer \
+        #      &groupName=DEFAULT_GROUP&namespaceId=public&ip=192.168.1.102&clusterName=DEFAULT \
+        #      &port=8088&ephemeral=false&username=nacos&password=nacos"
         ephemeral: false
         # 负载均衡元数据（一些扩展属性）
         metadata:
           # 权重数据 （设置给 ZonePreferenceServiceInstanceListSupplier 读取）
           weight: 8
           # 区域标识 （设置给 ZonePreferenceServiceInstanceListSupplier 读取）
-          zone: foo-zone
+          zone: bar-zone
           # 生成 instanceId 方法，默认 simple，Nacos 2.3.0 支持 snowflake
           # 参考：https://github.com/alibaba/nacos/issues/9001
           preserved.instance.id.generator: simple

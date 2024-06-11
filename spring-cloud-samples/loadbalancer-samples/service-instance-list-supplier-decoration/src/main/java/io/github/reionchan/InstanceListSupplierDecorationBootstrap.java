@@ -74,11 +74,11 @@ import java.util.List;
 public class InstanceListSupplierDecorationBootstrap {
 
     @Configuration
-    @LoadBalancerClient(name = "loadbalancer", configuration = WeightedServiceConfig.class)
+//    @LoadBalancerClient(name = "loadbalancer", configuration = WeightedServiceConfig.class)
 //    @LoadBalancerClient(name = "loadbalancer", configuration = ZoneBasedServiceConfig.class)
 //    @LoadBalancerClient(name = "loadbalancer", configuration = HealthCheckServiceConfig.class)
 //    @LoadBalancerClient(name = "loadbalancer", configuration = SameInstancePreferenceServiceConfig.class)
-//    @LoadBalancerClient(name = "loadbalancer", configuration = RequestBasedStickySessionServiceConfig.class)
+    @LoadBalancerClient(name = "loadbalancer", configuration = RequestBasedStickySessionServiceConfig.class)
 //    @LoadBalancerClient(name = "loadbalancer", configuration = HintBasedServiceConfig.class)
     static class InnerClass {
     }
@@ -281,6 +281,7 @@ public class InstanceListSupplierDecorationBootstrap {
      */
     public static boolean containTargetDelegate(ServiceInstanceListSupplier source, Class<? extends ServiceInstanceListSupplier> targetClass) {
         boolean result = false;
+        if (source.getClass().equals(targetClass)) return true;
         while (source instanceof DelegatingServiceInstanceListSupplier delegate) {
             source = delegate.getDelegate();
             if (source.getClass().equals(targetClass)) {
