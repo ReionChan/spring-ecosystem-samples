@@ -43,7 +43,7 @@ spring:
           # 权重数据 （设置给 ZonePreferenceServiceInstanceListSupplier 读取）
           weight: 8
           # 区域标识 （设置给 ZonePreferenceServiceInstanceListSupplier 读取）
-          zone: foo-zone
+          zone: bar-zone
           # 生成 instanceId 方法，默认 simple，Nacos 2.3.0 支持 snowflake
           # 参考：https://github.com/alibaba/nacos/issues/9001
           preserved.instance.id.generator: simple
