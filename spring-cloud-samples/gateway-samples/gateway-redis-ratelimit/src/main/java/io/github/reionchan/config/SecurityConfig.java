@@ -3,6 +3,7 @@ package io.github.reionchan.config;
 import org.springframework.cloud.gateway.config.GatewayAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
@@ -25,13 +26,12 @@ public class SecurityConfig {
      */
     @Bean
     SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity http) throws Exception {
-        return http.httpBasic().and()
-                .csrf().disable()
-                .authorizeExchange()
-                .pathMatchers("/anything/**").authenticated()
+        return http.httpBasic(Customizer.withDefaults())
+            .csrf(csrfSpec -> csrfSpec.disable())
+            .authorizeExchange(authorizeExchangeSpec ->
+                authorizeExchangeSpec.pathMatchers("/anything/**").authenticated()
                 .anyExchange().permitAll()
-                .and()
-                .build();
+            ).build();
     }
 
     /**
