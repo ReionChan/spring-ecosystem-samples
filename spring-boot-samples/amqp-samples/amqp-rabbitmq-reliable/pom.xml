@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.reionchan</groupId>
+        <artifactId>amqp-samples</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>amqp-rabbitmq-reliable</artifactId>
+    <name>2.2.2-RabbitMQ AMQP 可靠消息传递</name>
+    <packaging>pom</packaging>
+    <description>RabbitMQ AMQP 可靠消息传递</description>
+
+    <modules>
+        <module>reliable-producer</module>
+        <module>reliable-consumer</module>
+    </modules>
+</project>

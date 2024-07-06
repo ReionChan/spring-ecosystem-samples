@@ -1,0 +1,11 @@
+spring:
+
+  profiles:
+    active: rpc
+
+  rabbitmq:
+    virtual-host: "/"
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
