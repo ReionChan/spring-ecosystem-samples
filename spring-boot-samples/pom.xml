@@ -17,6 +17,7 @@
     <modules>
         <module>actuator-samples</module>
         <module>amqp-samples</module>
+        <module>kafka-samples</module>
     </modules>
 
     <dependencies>

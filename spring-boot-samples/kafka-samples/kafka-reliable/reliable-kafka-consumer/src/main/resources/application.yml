@@ -1,0 +1,22 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: kafka-producer
+
+  # Kafka 配置
+  kafka:
+    bootstrap-servers: localhost:9092
+    listener:
+      # 该手动确认模式
+      ack-mode: manual
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      # 关闭自动提交偏移量
+      enable-auto-commit: false
+      # 初次从最早的消息开始消费
+      auto-offset-reset: earliest
+      properties:
+        spring.json.trusted.packages: "*"

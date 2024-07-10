@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: kafka-producer
+
+  # Kafka 配置
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      # 除 leader 外，全部 follower 同步后才回复生产者接收消息成功 (防止消息丢失)
+      acks: all
+      # 发送失败重试次数 (确保一定发送消息)
+      retries: 3
+      properties:
+        # 设置很短超时时间，模拟发送失败，验证重试次数
+        request.timeout.ms: 10000
+        # 开启幂等 (确保分区内消息的不重复)
+        enable.idempotence: true
+        # 开启幂等后，此数量设置 1，防止发送乱序
+        max.in.flight.requests.per.connection: 1
