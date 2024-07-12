@@ -5,17 +5,17 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.github.reionchan</groupId>
-        <artifactId>spring-framework-samples</artifactId>
+        <artifactId>spring-boot-samples</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>testing-samples</artifactId>
+    <artifactId>data-samples</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>1.2-Spring Testing 相关样例</name>
+    <name>2.4-Spring Data 相关样例</name>
     <packaging>pom</packaging>
 
     <modules>
-        <module>unit-testing</module>
+        <module>mongodb</module>
     </modules>
 
 </project>

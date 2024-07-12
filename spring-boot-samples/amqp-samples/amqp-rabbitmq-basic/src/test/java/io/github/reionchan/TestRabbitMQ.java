@@ -24,25 +24,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(classes = RabbitMQBootstrap.class)
 @ActiveProfiles("simple")
-@Testcontainers
-public class TestRabbitMQ {
-
-    @Container
-    public static RabbitMQContainer rabbitmq = new RabbitMQContainer("rabbitmq:3.13.4");
-
-    @DynamicPropertySource
-    static void registerProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.rabbitmq.host", rabbitmq::getHost);
-        registry.add("spring.rabbitmq.port", rabbitmq::getAmqpPort);
-        registry.add("spring.rabbitmq.username", rabbitmq::getAdminUsername);
-        registry.add("spring.rabbitmq.password", rabbitmq::getAdminPassword);
-    }
+public class TestRabbitMQ extends RabbitContainer {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
     @Test
-    public void testCollections() {
+    public void testCollections() throws InterruptedException {
         assertThat(rabbitTemplate).isNotNull();
+        Thread.sleep(10000);
     }
 }
