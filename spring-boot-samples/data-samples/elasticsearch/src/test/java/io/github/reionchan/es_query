@@ -1,0 +1,123 @@
+# 获取索引信息
+GET /orderindex
+
+
+# 查询所有
+GET /orderindex/_search
+{
+  "query":{
+    "match_all": {}
+  }
+}
+
+# 查询 name 包含 47ff
+GET /orderindex/_search
+{
+  "query":{
+    "match": {
+      "name": "47ff"
+    }
+  }
+}
+
+# 查询价格在 10 15 范围
+GET /orderindex/_search
+{
+  "query":{
+    "range": {
+      "price": {
+        "gte": 10,
+        "lte": 15
+      }
+    }
+  }
+}
+
+# 查询价格必须是 10 且 日期在 7月16之后, 且 id 为指定精确字符串
+GET /orderindex/_search
+{
+  "query":{
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "price": 10
+          }
+        },
+        {
+          "range": {
+            "createTime": {
+              "gte": "2024-07-16"
+            }
+          }
+        }
+      ],
+      "filter": [
+        {
+          "term": {
+            "_id": "mddiuZABBCtf5h_lkwnX"
+          }
+        }
+      ]
+    }
+  }
+}
+
+# 带命名的查询
+GET /orderindex/_search?include_named_queries_score
+{
+  "query":{
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "price": {
+              "query": 10,
+              "_name": "priceMatch"
+
+            }
+          }
+        },
+        {
+          "range": {
+            "createTime": {
+                "gte": "2024-07-16"
+            }
+          }
+        }
+      ],
+      "filter": [
+        {
+          "term": {
+            "_id": "mddiuZABBCtf5h_lkwnX"
+          }
+        }
+      ]
+    }
+  }
+}
+
+# 查询价格分布区间
+GET /orderindex/_search
+{
+  "size": 0,
+  "aggs": {
+    "countAgg": {
+      "terms": {
+        "field": "price"
+      }
+    }
+  }
+}
+
+# 查询平均价格
+GET /orderindex/_search
+{
+  "aggs": {
+    "countAgg": {
+      "avg": {
+        "field": "price"
+      }
+    }
+  }
+}
